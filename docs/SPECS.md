@@ -36,3 +36,4 @@ Spider, FreeCell, comptes, serveur, pubs, multijoueur, i18n.
 - **Cartes** : figures (V, D, R) stylisées en aplats ; dos pop-art ; SVG thémable.
 - **Victoire** : explosion de couleurs, bandeau « YOU WIN! », cartes qui rebondissent.
 - **Tokens** : variables CSS (`--ink`, `--paper`, `--accent`, `--shadow-offset`…) pour ajouter d'autres thèmes plus tard.
+

@@ -25,3 +25,4 @@ Journal des décisions techniques (ADR allégé). Les plus récentes en bas.
 | Config, tests simples, README, tâches mécaniques | Gemini 3.8 Flash |
 
 Les tests Vitest du moteur servent de filet pour déléguer à un modèle moins cher.
+

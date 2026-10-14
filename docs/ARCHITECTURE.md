@@ -50,3 +50,4 @@ Ce modèle sera affiné au jalon 1.
 - Push sur `main` → GitHub Actions : lint, tests, build → GitHub Pages.
 - Icônes PWA générées depuis `public/favicon.svg` (`npm run icons`).
 - TypeScript `strict` + `noUncheckedIndexedAccess`.
+
