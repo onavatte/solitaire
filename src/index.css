@@ -1,0 +1,47 @@
+:root {
+  --ink: #111;
+  --paper: #fff4d6;
+  --accent: #ffd23f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: system-ui, sans-serif;
+  /* évite le pull-to-refresh et le zoom accidentel pendant le jeu */
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+.splash {
+  display: grid;
+  place-content: center;
+  height: 100%;
+  text-align: center;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+.update-banner {
+  position: fixed;
+  inset: auto 1rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--accent);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+}
