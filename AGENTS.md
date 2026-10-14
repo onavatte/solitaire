@@ -26,6 +26,12 @@ Avant de commit : lint, tests et build doivent passer (la CI bloque sinon le dé
 - Le drag & drop est fait maison avec les Pointer Events, sans bibliothèque (`src/ui/input/`).
 - Thème : variables CSS (`--ink`, `--paper`, `--accent`…) ; cartes en SVG.
 
+## Sécurité (repo public)
+- **Ne jamais commiter de donnée sensible** : clé d'API, jeton, mot de passe, certificat, fichier `.env`, données personnelles. Le repo GitHub est public et l'historique git est permanent.
+- Pas de secret en dur dans le code : le build Vite l'intégrerait au bundle, lisible par tous. Cette app n'a pas de serveur ni de clé ; s'il en faut un jour, en discuter d'abord.
+- Les fichiers `.env*` restent ignorés (`.gitignore`). Avant chaque commit, vérifier `git status` / `git diff --staged`.
+- Si un secret est commité par erreur : le **révoquer immédiatement** chez le fournisseur (le retirer du code ne suffit pas), puis nettoyer l'historique.
+
 ## Conventions
 - TypeScript `strict` + `noUncheckedIndexedAccess` : pas de `any`, gérer les `undefined` des accès aux tableaux.
 - Prettier : sans point-virgule, guillemets simples. Textes de l'interface en français, en dur.

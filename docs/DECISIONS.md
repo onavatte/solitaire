@@ -26,3 +26,6 @@ Journal des décisions techniques (ADR allégé). Les plus récentes en bas.
 
 Les tests Vitest du moteur servent de filet pour déléguer à un modèle moins cher.
 
+
+## Sécurité
+- 2026-10-13 : repo public conservé (requis pour GitHub Pages gratuit). Règle : aucune donnée sensible dans git (clés, jetons, .env) ; voir AGENTS.md. .gitignore exclut .env*, *.pem, *.key.
