@@ -2,7 +2,13 @@
 
 Solitaire Klondike sans pub, style bande dessinée. PWA installable, 100 % hors-ligne.
 
-**Stack** : React + Vite + TypeScript, vite-plugin-pwa, Vitest. Voir le plan du projet pour les specs et le backlog.
+**Stack** : React + Vite + TypeScript, vite-plugin-pwa, Vitest.
+
+## Documentation
+- [Specs](docs/SPECS.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Backlog](docs/BACKLOG.md)
+- [Décisions](docs/DECISIONS.md)
 
 ## Commandes
 
