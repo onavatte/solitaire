@@ -17,6 +17,7 @@ Journal des décisions techniques (ADR allégé). Les plus récentes en bas.
 | 2026-10-14 | **Mulberry32 PRNG pur** | Aléatoire déterministe avec graine sans dépendance externe |
 | 2026-10-14 | **Autocomplétion pas-à-pas** | `autocompleteStep` unitaire pour permettre les animations visuelles en UI |
 | 2026-10-14 | **Thème classique (MVP)** | Feutrine verte et cartes standard pour le MVP ; thème comics reporté en v2 |
+| 2026-10-15 | **Cartes : en-tête horizontal & figures SVG stylisées** | Rang + enseigne alignés en haut à gauche pour visibilité en cascade mobile ; figures V, D, R en SVG monochrome stylisé (`currentColor`) sans symétrie inverse ; grand symbole décalé vers le bas (cartes 1–10) ; suppression du coin inférieur droit redondant. |
 
 ## Stratégie d'usage des modèles IA
 | Phase | Modèle conseillé |
