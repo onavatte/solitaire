@@ -115,7 +115,7 @@ export const Board: React.FC<BoardProps> = ({
         <div style={{ position: 'relative' }}>
           <Slot
             label={state.stock.length > 0 ? undefined : '↺'}
-            onClick={onStockClick}
+            onClick={state.stock.length === 0 ? onStockClick : undefined}
             highlight={highlightStock}
           >
             {state.stock.length > 0 && (

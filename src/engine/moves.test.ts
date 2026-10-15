@@ -40,6 +40,31 @@ describe('draw', () => {
     expect(next.moves).toBe(1)
   })
 
+  it('tire l’unique carte restante du stock sans recycler prématurément', () => {
+    const lastCard = makeCard('diamonds', 10, false)
+    const existingWaste = makeCard('spades', 3, true)
+    const initial = createEmptyState({
+      stock: [lastCard],
+      waste: [existingWaste],
+      drawCount: 1,
+    })
+
+    const afterDraw = draw(initial)
+
+    // Le stock doit être vide
+    expect(afterDraw.stock).toHaveLength(0)
+    // La défausse a reçu la dernière carte
+    expect(afterDraw.waste).toHaveLength(2)
+    expect(afterDraw.waste[1]?.id).toBe('diamonds-10')
+    expect(afterDraw.waste[1]?.faceUp).toBe(true)
+
+    // Uniquement au coup suivant, le clic sur la pioche vide déclenche le recyclage
+    const afterRecycle = draw(afterDraw)
+    expect(afterRecycle.stock).toHaveLength(2)
+    expect(afterRecycle.waste).toHaveLength(0)
+    expect(afterRecycle.stock.every((c) => !c.faceUp)).toBe(true)
+  })
+
   it('tire jusqu’à 3 cartes quand drawCount = 3', () => {
     const c1 = makeCard('spades', 1, false)
     const c2 = makeCard('spades', 2, false)

@@ -33,8 +33,10 @@ export const CardView: React.FC<CardViewProps> = ({
     return (
       <div
         role="img"
-        aria-label="Carte face cachée"
-        onClick={onClick}
+        onClick={(e) => {
+          e.stopPropagation()
+          onClick?.()
+        }}
         className={className}
         style={{
           position: 'relative',
@@ -80,8 +82,14 @@ export const CardView: React.FC<CardViewProps> = ({
       role="button"
       tabIndex={0}
       aria-label={cardAccessibleName(card)}
-      onClick={onClick}
-      onDoubleClick={onDoubleClick}
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick?.()
+      }}
+      onDoubleClick={(e) => {
+        e.stopPropagation()
+        onDoubleClick?.()
+      }}
       className={className}
       style={{
         position: 'relative',
