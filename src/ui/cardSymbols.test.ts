@@ -26,4 +26,9 @@ describe('cardSymbols helpers', () => {
     const hiddenCard: Card = { id: 'spades-1', suit: 'spades', rank: 1, faceUp: false }
     expect(cardAccessibleName(hiddenCard)).toBe('Carte face cachée')
   })
+
+  it('exporte CourtFigure correctement', async () => {
+    const { CourtFigure } = await import('./CourtFigures')
+    expect(typeof CourtFigure).toBe('function')
+  })
 })

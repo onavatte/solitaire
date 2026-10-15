@@ -1,6 +1,7 @@
 import React from 'react'
 import type { Card } from '../engine'
 import { colorOf } from '../engine'
+import { CourtFigure } from './CourtFigures'
 import { SuitIcon } from './cardSymbols'
 import { cardAccessibleName, rankLabel } from './cardUtils'
 
@@ -110,100 +111,72 @@ export const CardView: React.FC<CardViewProps> = ({
         ...style,
       }}
     >
-      {/* Coin supérieur gauche */}
+      {/* En-tête supérieur gauche : rang et enseigne côte à côte */}
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'row',
           alignItems: 'center',
+          gap: 'clamp(2px, 0.6vw, 4px)',
           lineHeight: 1,
           width: 'fit-content',
+          zIndex: 1,
         }}
       >
         <span
           style={{
-            fontSize: 'clamp(0.75rem, 2.8vw, 1.15rem)',
+            fontSize: 'clamp(1rem, 4.4vw, 1.55rem)',
             fontWeight: 800,
-            letterSpacing: '-0.05em',
+            letterSpacing: '-0.04em',
           }}
         >
           {label}
         </span>
-        <div style={{ fontSize: 'clamp(0.6rem, 2.2vw, 0.95rem)', marginTop: '1px' }}>
-          <SuitIcon suit={card.suit} />
-        </div>
-      </div>
-
-      {/* Centre de la carte */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'none',
-        }}
-      >
-        {card.rank === 1 ? (
-          // As : Grand symbole central
-          <div style={{ fontSize: 'clamp(1.6rem, 6.5vw, 2.8rem)' }}>
-            <SuitIcon suit={card.suit} />
-          </div>
-        ) : isCourt ? (
-          // Figures (V, D, R) : Cadre sobre et lettre de figure
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: `1px solid ${textColor}33`,
-              borderRadius: '4px',
-              padding: '2px 6px',
-              backgroundColor: `${textColor}08`,
-            }}
-          >
-            <span style={{ fontSize: 'clamp(1.1rem, 4.5vw, 1.8rem)', fontWeight: 800 }}>
-              {label}
-            </span>
-            <div style={{ fontSize: 'clamp(0.8rem, 3vw, 1.1rem)' }}>
-              <SuitIcon suit={card.suit} />
-            </div>
-          </div>
-        ) : (
-          // Cartes 2 à 10 : Symbole moyen centré
-          <div style={{ fontSize: 'clamp(1.2rem, 4.5vw, 1.9rem)' }}>
-            <SuitIcon suit={card.suit} />
-          </div>
-        )}
-      </div>
-
-      {/* Coin inférieur droit (inversé 180deg) */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          lineHeight: 1,
-          width: 'fit-content',
-          alignSelf: 'flex-end',
-          transform: 'rotate(180deg)',
-        }}
-      >
-        <span
+        <div
           style={{
-            fontSize: 'clamp(0.75rem, 2.8vw, 1.15rem)',
-            fontWeight: 800,
-            letterSpacing: '-0.05em',
+            fontSize: 'clamp(0.85rem, 3.8vw, 1.3rem)',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          {label}
-        </span>
-        <div style={{ fontSize: 'clamp(0.6rem, 2.2vw, 0.95rem)', marginTop: '1px' }}>
           <SuitIcon suit={card.suit} />
         </div>
       </div>
+
+      {/* Corps de la carte */}
+      {isCourt ? (
+        // Figures (Valet, Dame, Roi) : Portrait SVG traditionnel
+        <div
+          style={{
+            position: 'absolute',
+            inset: 'auto 0 0 0',
+            height: '75%',
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+          }}
+        >
+          <CourtFigure rank={card.rank} suit={card.suit} />
+        </div>
+      ) : (
+        // As et cartes numérotées 2 à 10 : Grand symbole unique descendant vers le bas
+        <div
+          style={{
+            position: 'absolute',
+            inset: 'auto 0 4px 0',
+            height: '68%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            fontSize: 'clamp(2.3rem, 9.8vw, 4.2rem)',
+          }}
+        >
+          <SuitIcon suit={card.suit} />
+        </div>
+      )}
     </div>
   )
 }
