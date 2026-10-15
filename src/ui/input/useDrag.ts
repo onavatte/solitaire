@@ -34,6 +34,7 @@ export function useDrag({ onDrop, onTap, onDoubleTap, canDragCard }: UseDragOpti
   const startPosRef = useRef({ x: 0, y: 0 })
   const pendingSequenceRef = useRef<Omit<DraggedSequence, 'currentPos'> | null>(null)
   const lastTapRef = useRef<{ location: Location; time: number } | null>(null)
+  const lastDoubleTapTimeRef = useRef<number>(0)
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent, from: Location, cards: readonly Card[]) => {
@@ -117,20 +118,27 @@ export function useDrag({ onDrop, onTap, onDoubleTap, canDragCard }: UseDragOpti
       } else {
         // Clic ou tap sans mouvement
         const now = Date.now()
-        const lastTap = lastTapRef.current
 
-        if (
-          onDoubleTap &&
-          lastTap &&
-          now - lastTap.time < 350 &&
-          isSameLocation(lastTap.location, from)
-        ) {
-          // Double-clic / double-tap confirmé !
+        // Cooldown de sécurité : si un double-tap vient d'avoir lieu, ignorer les rebonds de clics résiduels
+        if (now - lastDoubleTapTimeRef.current < 400) {
           lastTapRef.current = null
-          onDoubleTap(from)
         } else {
-          lastTapRef.current = { location: from, time: now }
-          onTap(from)
+          const lastTap = lastTapRef.current
+
+          if (
+            onDoubleTap &&
+            lastTap &&
+            now - lastTap.time < 350 &&
+            isSameLocation(lastTap.location, from)
+          ) {
+            // Double-clic / double-tap confirmé sur une seule carte !
+            lastTapRef.current = null
+            lastDoubleTapTimeRef.current = now
+            onDoubleTap(from)
+          } else {
+            lastTapRef.current = { location: from, time: now }
+            onTap(from)
+          }
         }
       }
 

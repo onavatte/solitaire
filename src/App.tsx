@@ -12,6 +12,8 @@ export default function App() {
     selectedLocation,
     activeHint,
     canAutocomplete,
+    isAutocompleting,
+    startAutocomplete,
     onStockClick,
     onSelectOrMove,
     onMoveCards,
@@ -19,7 +21,6 @@ export default function App() {
     onUndo,
     onHint,
     onNewGame,
-    onAutocompleteStep,
   } = useGame({ drawCount })
 
   // Calcul des surbrillances pour l'indice visuel
@@ -99,7 +100,8 @@ export default function App() {
         >
           <button
             type="button"
-            onClick={onAutocompleteStep}
+            onClick={startAutocomplete}
+            disabled={isAutocompleting}
             style={{
               padding: '0.6rem 1.2rem',
               backgroundColor: 'var(--highlight-color)',
@@ -109,11 +111,12 @@ export default function App() {
               fontWeight: 700,
               fontSize: '0.95rem',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
-              cursor: 'pointer',
+              cursor: isAutocompleting ? 'default' : 'pointer',
+              opacity: isAutocompleting ? 0.75 : 1,
               minHeight: '44px',
             }}
           >
-            Terminer automatiquement ⚡
+            {isAutocompleting ? 'Résolution en cours... ⚡' : 'Terminer automatiquement ⚡'}
           </button>
         </div>
       )}

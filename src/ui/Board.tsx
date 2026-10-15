@@ -202,7 +202,6 @@ export const Board: React.FC<BoardProps> = ({
                         >
                           <CardView
                             card={card}
-                            onDoubleClick={onWasteDoubleClick}
                             isSelected={selectedLocation?.zone === 'waste'}
                             isHighlighted={highlightWaste}
                           />
@@ -337,7 +336,6 @@ export const Board: React.FC<BoardProps> = ({
                       card={card}
                       isSelected={isCardSelected}
                       isHighlighted={isCardHighlighted}
-                      onDoubleClick={() => onTableauCardDoubleClick?.(colIndex, cardIndex)}
                     />
                   </div>
                 )

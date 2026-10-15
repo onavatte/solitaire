@@ -9,7 +9,6 @@ interface CardViewProps {
   isHighlighted?: boolean
   isSelected?: boolean
   onClick?: () => void
-  onDoubleClick?: () => void
   style?: React.CSSProperties
   className?: string
 }
@@ -19,7 +18,6 @@ export const CardView: React.FC<CardViewProps> = ({
   isHighlighted,
   isSelected,
   onClick,
-  onDoubleClick,
   style,
   className,
 }) => {
@@ -88,7 +86,7 @@ export const CardView: React.FC<CardViewProps> = ({
       }}
       onDoubleClick={(e) => {
         e.stopPropagation()
-        onDoubleClick?.()
+        e.preventDefault()
       }}
       className={className}
       style={{

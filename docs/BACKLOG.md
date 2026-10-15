@@ -29,7 +29,7 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Inverser la ligne du haut : 4 Fondations (gauche) | Défausse | Pioche (droite, ergonomie droitier)
 - [x] Corriger le filigrane des colonnes vides : 'R' au lieu de 'K' (Français)
 - [x] Défausse à 3 cartes : éventail horizontal montrant les cartes sous-jacentes
-- [ ] Vérifier autocomplétion (auto-finish) après résolution des clics
+- [x] Autocomplétion cadencée continue (100 ms) + suppression du double-clic en chaîne
 
 ## Jalon 3 — Finitions MVP (≈ 0,5–1 j)
 - [ ] Sauvegarde/reprise de la partie (`localStorage`), stats

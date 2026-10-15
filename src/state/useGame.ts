@@ -19,6 +19,7 @@ export interface GameStoreState {
   readonly selectedLocation: Location | null
   readonly activeHint: Hint | null
   readonly isPaused: boolean
+  readonly isAutocompleting: boolean
 }
 
 export type GameAction =
@@ -29,6 +30,8 @@ export type GameAction =
   | { type: 'SHOW_HINT' }
   | { type: 'CLEAR_HINT' }
   | { type: 'NEW_GAME'; options?: DealOptions }
+  | { type: 'START_AUTOCOMPLETE' }
+  | { type: 'STOP_AUTOCOMPLETE' }
   | { type: 'AUTOCOMPLETE_STEP' }
   | { type: 'TICK_TIME'; deltaMs: number }
   | { type: 'SET_PAUSED'; isPaused: boolean }
@@ -40,6 +43,7 @@ function createInitialStore(options?: DealOptions): GameStoreState {
     selectedLocation: null,
     activeHint: null,
     isPaused: false,
+    isAutocompleting: false,
   }
 }
 
@@ -111,16 +115,36 @@ function gameReducer(state: GameStoreState, action: GameAction): GameStoreState 
       return createInitialStore(action.options)
     }
 
+    case 'START_AUTOCOMPLETE': {
+      return {
+        ...state,
+        isAutocompleting: true,
+        selectedLocation: null,
+        activeHint: null,
+      }
+    }
+
+    case 'STOP_AUTOCOMPLETE': {
+      return {
+        ...state,
+        isAutocompleting: false,
+      }
+    }
+
     case 'AUTOCOMPLETE_STEP': {
       const nextGame = autocompleteStep(state.history.present)
       if (!nextGame) {
-        return state
+        return {
+          ...state,
+          isAutocompleting: false,
+        }
       }
       return {
         ...state,
         history: recordMove(state.history, nextGame),
         selectedLocation: null,
         activeHint: null,
+        isAutocompleting: nextGame.status !== 'won',
       }
     }
 
@@ -182,13 +206,28 @@ export function useGame(initialOptions?: DealOptions) {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [])
 
+  // Cadencement automatique de l'autocomplétion (1 coup toutes les 100 ms)
+  useEffect(() => {
+    if (!store.isAutocompleting || game.status !== 'playing') {
+      return
+    }
+
+    const timer = setTimeout(() => {
+      dispatch({ type: 'AUTOCOMPLETE_STEP' })
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [store.isAutocompleting, game])
+
   // Interaction : clic sur la pioche
   const handleStockClick = () => {
+    if (store.isAutocompleting) return
     dispatch({ type: 'DRAW' })
   }
 
   // Interaction : clic sur une carte ou pile
   const handleSelectOrMove = (targetLocation: Location) => {
+    if (store.isAutocompleting) return
     const selected = store.selectedLocation
 
     if (!selected) {
@@ -218,6 +257,7 @@ export function useGame(initialOptions?: DealOptions) {
 
   // Double-tap : coup rapide intelligent (fondation, séquence tableau ou colonne vide pour Roi)
   const handleQuickMove = (fromLocation: Location) => {
+    if (store.isAutocompleting) return
     const target = findAutoMove(game, fromLocation)
     if (target) {
       dispatch({ type: 'MOVE_CARDS', from: fromLocation, to: target })
@@ -226,13 +266,18 @@ export function useGame(initialOptions?: DealOptions) {
 
   return {
     game,
-    canUndo: store.history.past.length > 0,
+    canUndo: store.history.past.length > 0 && !store.isAutocompleting,
     selectedLocation: store.selectedLocation,
     activeHint: store.activeHint,
     canAutocomplete: canAutocomplete(game),
+    isAutocompleting: store.isAutocompleting,
+    startAutocomplete: () => dispatch({ type: 'START_AUTOCOMPLETE' }),
     onStockClick: handleStockClick,
     onSelectOrMove: handleSelectOrMove,
-    onMoveCards: (from: Location, to: Location) => dispatch({ type: 'MOVE_CARDS', from, to }),
+    onMoveCards: (from: Location, to: Location) => {
+      if (store.isAutocompleting) return
+      dispatch({ type: 'MOVE_CARDS', from, to })
+    },
     onQuickMove: handleQuickMove,
     onQuickMoveToFoundation: handleQuickMove,
     onUndo: () => dispatch({ type: 'UNDO' }),
