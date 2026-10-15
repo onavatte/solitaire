@@ -14,6 +14,8 @@ Journal des décisions techniques (ADR allégé). Les plus récentes en bas.
 | 2026-10-13 | **oxlint** (fourni par le template Vite) au lieu d'ESLint | Rapide, configuré par défaut |
 | 2026-10-13 | **Mise à jour PWA par `prompt`** | Évite de recharger l'app en pleine partie |
 | 2026-10-13 | **Domaine perso reporté** | Nécessite `BASE_PATH=/` ; réinstaller l'app après changement d'URL |
+| 2026-10-14 | **Mulberry32 PRNG pur** | Aléatoire déterministe avec graine sans dépendance externe |
+| 2026-10-14 | **Autocomplétion pas-à-pas** | `autocompleteStep` unitaire pour permettre les animations visuelles en UI |
 
 ## Stratégie d'usage des modèles IA
 | Phase | Modèle conseillé |

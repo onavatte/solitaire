@@ -8,15 +8,15 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Déploiement GitHub Pages par Actions (lint + tests + build)
 - [x] Vérifié sur téléphone (installation + hors-ligne)
 
-## Jalon 1 — Moteur (≈ 1 j, TDD)
-- [ ] Types, paquet de 52 cartes, RNG à graine, mélange
-- [ ] Distribution initiale
-- [ ] Coups légaux tableau / fondations, déplacement de séquences
-- [ ] Pioche 1 ou 3 cartes et recyclage de la défausse
-- [ ] Détection de victoire
-- [ ] Historique / annulation illimitée
-- [ ] Indice
-- [ ] Autocomplétion (victoire automatique)
+## Jalon 1 — Moteur (≈ 1 j, TDD) ✅
+- [x] Types, paquet de 52 cartes, RNG à graine, mélange
+- [x] Distribution initiale
+- [x] Coups légaux tableau / fondations, déplacement de séquences
+- [x] Pioche 1 ou 3 cartes et recyclage de la défausse
+- [x] Détection de victoire
+- [x] Historique / annulation illimitée
+- [x] Indice
+- [x] Autocomplétion (victoire automatique)
 
 ## Jalon 2 — UI jouable, thème neutre (≈ 1–1,5 j)
 - [ ] Plateau responsive portrait
