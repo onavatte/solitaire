@@ -62,6 +62,13 @@ export const Board: React.FC<BoardProps> = ({
         onFoundationClick?.(loc.foundationIndex)
       }
     },
+    onDoubleTap: (loc) => {
+      if (loc.zone === 'waste') {
+        onWasteDoubleClick?.()
+      } else if (loc.zone === 'tableau') {
+        onTableauCardDoubleClick?.(loc.column, loc.cardIndex ?? 0)
+      }
+    },
     canDragCard,
   })
 

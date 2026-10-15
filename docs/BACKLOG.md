@@ -18,14 +18,18 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Indice
 - [x] Autocomplétion (victoire automatique)
 
-## Jalon 2 — UI jouable, thème classique feutrine (≈ 1–1,5 j) ✅
+## Jalon 2 — UI jouable, thème classique feutrine (≈ 1–1,5 j)
 - [x] Plateau responsive portrait (feutrine verte, safe areas)
 - [x] Rendu des cartes en SVG standard (figures nettes, enseignes, dos géométrique)
-- [x] Tap pour sélectionner/déplacer + double-tap vers fondation
 - [x] Drag & drop maison (Pointer Events)
 - [x] Barre d'outils : annuler, indice, nouvelle donne, réglages (pioche 1/3)
 - [x] Chrono (pause en arrière-plan) et compteur de coups
 - [x] Déclenchement autocomplétion & écran de victoire sobre
+- [x] Fix double-clic / double-tap vers fondation
+- [ ] Inverser la ligne du haut : 4 Fondations (gauche) | Défausse | Pioche (droite, ergonomie droitier)
+- [ ] Corriger le filigrane des colonnes vides : 'R' au lieu de 'K' (Français)
+- [ ] Défausse à 3 cartes : éventail horizontal montrant les cartes sous-jacentes
+- [ ] Vérifier autocomplétion (auto-finish) après résolution des clics
 
 ## Jalon 3 — Finitions MVP (≈ 0,5–1 j)
 - [ ] Sauvegarde/reprise de la partie (`localStorage`), stats

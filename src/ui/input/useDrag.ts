@@ -13,14 +13,27 @@ export interface DraggedSequence {
 interface UseDragOptions {
   onDrop: (from: Location, to: Location) => void
   onTap: (location: Location) => void
+  onDoubleTap?: (location: Location) => void
   canDragCard?: (location: Location) => boolean
 }
 
-export function useDrag({ onDrop, onTap, canDragCard }: UseDragOptions) {
+function isSameLocation(a: Location, b: Location): boolean {
+  if (a.zone !== b.zone) return false
+  if (a.zone === 'tableau' && b.zone === 'tableau') {
+    return a.column === b.column && a.cardIndex === b.cardIndex
+  }
+  if (a.zone === 'foundation' && b.zone === 'foundation') {
+    return a.foundationIndex === b.foundationIndex
+  }
+  return true
+}
+
+export function useDrag({ onDrop, onTap, onDoubleTap, canDragCard }: UseDragOptions) {
   const [dragged, setDragged] = useState<DraggedSequence | null>(null)
   const isDraggingRef = useRef(false)
   const startPosRef = useRef({ x: 0, y: 0 })
   const pendingSequenceRef = useRef<Omit<DraggedSequence, 'currentPos'> | null>(null)
+  const lastTapRef = useRef<{ location: Location; time: number } | null>(null)
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent, from: Location, cards: readonly Card[]) => {
@@ -102,8 +115,23 @@ export function useDrag({ onDrop, onTap, canDragCard }: UseDragOptions) {
           }
         }
       } else {
-        // C'était un simple tap / clic sans mouvement significatif
-        onTap(from)
+        // Clic ou tap sans mouvement
+        const now = Date.now()
+        const lastTap = lastTapRef.current
+
+        if (
+          onDoubleTap &&
+          lastTap &&
+          now - lastTap.time < 350 &&
+          isSameLocation(lastTap.location, from)
+        ) {
+          // Double-clic / double-tap confirmé !
+          lastTapRef.current = null
+          onDoubleTap(from)
+        } else {
+          lastTapRef.current = { location: from, time: now }
+          onTap(from)
+        }
       }
 
       // Nettoyage
@@ -119,7 +147,7 @@ export function useDrag({ onDrop, onTap, canDragCard }: UseDragOptions) {
       isDraggingRef.current = false
       setDragged(null)
     },
-    [onDrop, onTap],
+    [onDrop, onTap, onDoubleTap],
   )
 
   const handlePointerCancel = useCallback(() => {
@@ -136,4 +164,3 @@ export function useDrag({ onDrop, onTap, canDragCard }: UseDragOptions) {
     handlePointerCancel,
   }
 }
-
