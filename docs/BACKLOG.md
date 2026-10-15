@@ -32,6 +32,8 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Autocomplétion cadencée continue (100 ms) + suppression du double-clic en chaîne
 
 ## Jalon 3 — Finitions MVP (≈ 0,5–1 j)
+- [ ] Nouvelles icônes PWA classiques feutrine (remplacer le jaune "comics" de `public/favicon.svg` et régénérer)
+- [ ] Couleur de barre de statut mobile (`theme_color` PWA et `meta theme-color`) assortie au vert feutrine
 - [ ] Sauvegarde/reprise de la partie (`localStorage`), stats
 - [ ] Animations Framer Motion fluides (déplacement, distribution)
 - [ ] Mode gaucher, haptique, respect de `prefers-reduced-motion`
