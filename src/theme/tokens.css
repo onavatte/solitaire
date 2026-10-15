@@ -1,0 +1,42 @@
+:root {
+  /* Tapis et feutrine */
+  --felt-bg: #14592d;
+  --felt-gradient: radial-gradient(circle at 50% 25%, #1a6f39 0%, #114c25 100%);
+  --felt-text: #ffffff;
+  --felt-text-muted: rgba(255, 255, 255, 0.7);
+
+  /* Emplacements vides (Slots) */
+  --slot-bg: rgba(0, 0, 0, 0.18);
+  --slot-border: rgba(255, 255, 255, 0.22);
+  --slot-radius: 6px;
+
+  /* Cartes */
+  --card-aspect-ratio: 2.5 / 3.5;
+  --card-bg: #ffffff;
+  --card-border: #c8ccc9;
+  --card-radius: 6px;
+  --card-shadow: 0 2px 5px rgba(0, 0, 0, 0.28);
+  --card-shadow-lifted: 0 8px 18px rgba(0, 0, 0, 0.38);
+
+  /* Enseignes */
+  --red-suit: #d32f2f;
+  --black-suit: #1c1c1c;
+
+  /* Surbrillance et sélection */
+  --highlight-color: #ffd700;
+  --highlight-shadow: 0 0 0 3px #ffd700, 0 0 12px rgba(255, 215, 0, 0.6);
+
+  /* Barre d'outils et interface */
+  --toolbar-bg: rgba(9, 41, 20, 0.85);
+  --toolbar-border: rgba(255, 255, 255, 0.15);
+  --btn-bg: rgba(255, 255, 255, 0.12);
+  --btn-hover: rgba(255, 255, 255, 0.2);
+  --btn-active: rgba(255, 255, 255, 0.28);
+  --btn-disabled: rgba(255, 255, 255, 0.05);
+
+  /* Espacements et disposition */
+  --board-gap: clamp(4px, 1.2vw, 8px);
+  --cascade-hidden-gap: clamp(10px, 2.5vh, 16px);
+  --cascade-visible-gap: clamp(20px, 4.5vh, 30px);
+}
+

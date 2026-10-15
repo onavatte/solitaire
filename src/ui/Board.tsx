@@ -1,0 +1,312 @@
+import React from 'react'
+import type { Card, GameState, Location } from '../engine'
+import { CardView } from './CardView'
+import { DragOverlay } from './DragOverlay'
+import { Slot } from './Slot'
+import { useDrag } from './input/useDrag'
+
+interface BoardProps {
+  state: GameState
+  onStockClick: () => void
+  onWasteClick?: () => void
+  onWasteDoubleClick?: () => void
+  onFoundationClick?: (foundationIndex: number) => void
+  onTableauCardClick?: (column: number, cardIndex: number) => void
+  onTableauCardDoubleClick?: (column: number, cardIndex: number) => void
+  onTableauEmptyClick?: (column: number) => void
+  onDropMove?: (from: Location, to: Location) => void
+  canDragCard?: (from: Location) => boolean
+  highlightStock?: boolean
+  highlightWaste?: boolean
+  highlightFoundationIndex?: number | null
+  highlightTableau?: { column: number; cardIndex: number } | null
+  selectedLocation?:
+    | { readonly zone: 'waste' }
+    | { readonly zone: 'tableau'; readonly column: number; readonly cardIndex?: number }
+    | null
+}
+
+export const Board: React.FC<BoardProps> = ({
+  state,
+  onStockClick,
+  onWasteClick,
+  onWasteDoubleClick,
+  onFoundationClick,
+  onTableauCardClick,
+  onTableauCardDoubleClick,
+  onTableauEmptyClick,
+  onDropMove,
+  canDragCard,
+  highlightStock,
+  highlightWaste,
+  highlightFoundationIndex,
+  highlightTableau,
+  selectedLocation,
+}) => {
+  const {
+    dragged,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    handlePointerCancel,
+  } = useDrag({
+    onDrop: (from, to) => {
+      onDropMove?.(from, to)
+    },
+    onTap: (loc) => {
+      if (loc.zone === 'waste') {
+        onWasteClick?.()
+      } else if (loc.zone === 'tableau') {
+        onTableauCardClick?.(loc.column, loc.cardIndex ?? 0)
+      } else if (loc.zone === 'foundation') {
+        onFoundationClick?.(loc.foundationIndex)
+      }
+    },
+    canDragCard,
+  })
+
+  // Vérifie si une carte fait partie de la séquence en cours de glissement
+  const isCardDragged = (loc: Location): boolean => {
+    if (!dragged) return false
+    if (dragged.from.zone !== loc.zone) return false
+    if (loc.zone === 'waste') return true
+    if (loc.zone === 'foundation' && 'foundationIndex' in dragged.from) {
+      return dragged.from.foundationIndex === loc.foundationIndex
+    }
+    if (loc.zone === 'tableau' && 'column' in dragged.from && 'column' in loc) {
+      if (dragged.from.column !== loc.column) return false
+      const fromIndex = dragged.from.cardIndex ?? 0
+      const targetIndex = loc.cardIndex ?? 0
+      return targetIndex >= fromIndex
+    }
+    return false
+  }
+
+  return (
+    <main
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'clamp(8px, 1.8vh, 16px)',
+        paddingTop: 'calc(0.5rem + env(safe-area-inset-top, 0px))',
+        paddingLeft: 'var(--board-gap)',
+        paddingRight: 'var(--board-gap)',
+        paddingBottom: '0.5rem',
+        maxWidth: '720px',
+        margin: '0 auto',
+        width: '100%',
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      {/* Rangée supérieure : Pioche (0), Défausse (1), Espace (2), 4 Fondations (3..6) */}
+      <section
+        aria-label="Zone supérieure : pioche, défausse et fondations"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gap: 'var(--board-gap)',
+          width: '100%',
+        }}
+      >
+        {/* Colonne 0 : Talon / Stock */}
+        <div style={{ position: 'relative' }}>
+          <Slot
+            label={state.stock.length > 0 ? undefined : '↺'}
+            onClick={onStockClick}
+            highlight={highlightStock}
+          >
+            {state.stock.length > 0 && (
+              <CardView
+                card={state.stock[state.stock.length - 1] as Card}
+                onClick={onStockClick}
+              />
+            )}
+          </Slot>
+        </div>
+
+        {/* Colonne 1 : Défausse / Waste */}
+        <div style={{ position: 'relative' }}>
+          <Slot highlight={highlightWaste}>
+            {state.waste.length > 0 && (
+              <div
+                onPointerDown={(e) =>
+                  handlePointerDown(e, { zone: 'waste' }, [
+                    state.waste[state.waste.length - 1] as Card,
+                  ])
+                }
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerCancel}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  opacity: isCardDragged({ zone: 'waste' }) ? 0.2 : 1,
+                  touchAction: 'none',
+                }}
+              >
+                <CardView
+                  card={state.waste[state.waste.length - 1] as Card}
+                  onDoubleClick={onWasteDoubleClick}
+                  isSelected={selectedLocation?.zone === 'waste'}
+                  isHighlighted={highlightWaste}
+                />
+              </div>
+            )}
+          </Slot>
+        </div>
+
+        {/* Colonne 2 : Espace vide séparateur */}
+        <div aria-hidden="true" />
+
+        {/* Colonnes 3, 4, 5, 6 : Fondations (cibles de drop) */}
+        {state.foundations.map((foundation, index) => {
+          const topCard = foundation[foundation.length - 1]
+          return (
+            <div
+              key={`foundation-${index}`}
+              data-drop-zone="foundation"
+              data-drop-foundation={index}
+              style={{ position: 'relative', height: '100%' }}
+            >
+              <Slot
+                label="A"
+                onClick={() => onFoundationClick?.(index)}
+                highlight={highlightFoundationIndex === index}
+              >
+                {topCard && (
+                  <div
+                    onPointerDown={(e) =>
+                      handlePointerDown(
+                        e,
+                        { zone: 'foundation', foundationIndex: index },
+                        [topCard],
+                      )
+                    }
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerCancel}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      opacity: isCardDragged({ zone: 'foundation', foundationIndex: index })
+                        ? 0.2
+                        : 1,
+                      touchAction: 'none',
+                    }}
+                  >
+                    <CardView
+                      card={topCard}
+                      isHighlighted={highlightFoundationIndex === index}
+                    />
+                  </div>
+                )}
+              </Slot>
+            </div>
+          )
+        })}
+      </section>
+
+      {/* Rangée inférieure : Les 7 colonnes du tableau (cibles de drop) */}
+      <section
+        aria-label="Tableau de jeu"
+        style={{
+          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gap: 'var(--board-gap)',
+          width: '100%',
+        }}
+      >
+        {state.tableau.map((column, colIndex) => {
+          return (
+            <div
+              key={`tableau-col-${colIndex}`}
+              data-drop-zone="tableau"
+              data-drop-col={colIndex}
+              style={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              {/* Emplacement vide (pour poser un Roi si la colonne est vide) */}
+              <Slot
+                label="K"
+                onClick={() => onTableauEmptyClick?.(colIndex)}
+              />
+
+              {/* Cascade des cartes de la colonne */}
+              {column.map((card, cardIndex) => {
+                let topOffset = 0
+                for (let i = 0; i < cardIndex; i++) {
+                  const prevCard = column[i]
+                  topOffset += prevCard?.faceUp ? 24 : 12
+                }
+
+                const cardLoc: Location = {
+                  zone: 'tableau',
+                  column: colIndex,
+                  cardIndex,
+                }
+
+                const isCardSelected =
+                  selectedLocation?.zone === 'tableau' &&
+                  selectedLocation.column === colIndex &&
+                  (selectedLocation.cardIndex === undefined
+                    ? cardIndex === column.length - 1
+                    : cardIndex >= selectedLocation.cardIndex)
+
+                const isCardHighlighted =
+                  highlightTableau?.column === colIndex &&
+                  highlightTableau?.cardIndex === cardIndex
+
+                const draggedThisCard = isCardDragged(cardLoc)
+
+                return (
+                  <div
+                    key={card.id}
+                    onPointerDown={
+                      card.faceUp
+                        ? (e) =>
+                            handlePointerDown(
+                              e,
+                              cardLoc,
+                              column.slice(cardIndex),
+                            )
+                        : undefined
+                    }
+                    onPointerMove={card.faceUp ? handlePointerMove : undefined}
+                    onPointerUp={card.faceUp ? handlePointerUp : undefined}
+                    onPointerCancel={card.faceUp ? handlePointerCancel : undefined}
+                    style={{
+                      position: 'absolute',
+                      top: `${topOffset}px`,
+                      left: 0,
+                      right: 0,
+                      zIndex: cardIndex + 1,
+                      opacity: draggedThisCard ? 0.2 : 1,
+                      touchAction: card.faceUp ? 'none' : 'auto',
+                    }}
+                  >
+                    <CardView
+                      card={card}
+                      isSelected={isCardSelected}
+                      isHighlighted={isCardHighlighted}
+                      onDoubleClick={() => onTableauCardDoubleClick?.(colIndex, cardIndex)}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })}
+      </section>
+
+      {/* Rendu des cartes flottantes pendant le glissement */}
+      <DragOverlay dragged={dragged} />
+    </main>
+  )
+}
