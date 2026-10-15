@@ -194,3 +194,68 @@ export function moveCards(
   }
 }
 
+/**
+ * Recherche le meilleur coup automatique pour une carte donnée (Smart Move).
+ * Priorités :
+ * 1. Fondation
+ * 2. Colonne du tableau avec cartes
+ * 3. Colonne vide (pour les Rois uniquement, s'ils libèrent une carte cachée ou proviennent de la défausse)
+ */
+export function findAutoMove(
+  state: GameState,
+  from: Location,
+): Location | null {
+  const movingCards = getMovingCards(state, from)
+  if (!movingCards || movingCards.length === 0) {
+    return null
+  }
+
+  const firstCard = movingCards[0]
+  if (!firstCard) {
+    return null
+  }
+
+  // 1. Fondation en priorité (uniquement pour 1 carte seule)
+  if (movingCards.length === 1) {
+    for (let f = 0; f < state.foundations.length; f++) {
+      const target: Location = { zone: 'foundation', foundationIndex: f }
+      if (canMove(state, from, target)) {
+        return target
+      }
+    }
+  }
+
+  // 2. Colonne non vide du tableau
+  for (let c = 0; c < state.tableau.length; c++) {
+    if (from.zone === 'tableau' && from.column === c) continue
+    const col = state.tableau[c]
+    if (col && col.length > 0) {
+      const target: Location = { zone: 'tableau', column: c }
+      if (canMove(state, from, target)) {
+        return target
+      }
+    }
+  }
+
+  // 3. Colonne vide du tableau (pour un Roi uniquement, s'il provient de la défausse ou libère des cartes)
+  if (firstCard.rank === 13) {
+    const isKingAloneAtRoot =
+      from.zone === 'tableau' && (from.cardIndex ?? 0) === 0
+
+    if (!isKingAloneAtRoot) {
+      for (let c = 0; c < state.tableau.length; c++) {
+        if (from.zone === 'tableau' && from.column === c) continue
+        const col = state.tableau[c]
+        if (col && col.length === 0) {
+          const target: Location = { zone: 'tableau', column: c }
+          if (canMove(state, from, target)) {
+            return target
+          }
+        }
+      }
+    }
+  }
+
+  return null
+}
+

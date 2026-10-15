@@ -6,6 +6,7 @@ import {
   canMove,
   dealGame,
   draw,
+  findAutoMove,
   findHint,
   initHistory,
   moveCards,
@@ -215,14 +216,11 @@ export function useGame(initialOptions?: DealOptions) {
     }
   }
 
-  // Double-tap : envoi rapide vers la fondation la plus appropriée
-  const handleQuickMoveToFoundation = (fromLocation: Location) => {
-    for (let f = 0; f < game.foundations.length; f++) {
-      const target: Location = { zone: 'foundation', foundationIndex: f }
-      if (canMove(game, fromLocation, target)) {
-        dispatch({ type: 'MOVE_CARDS', from: fromLocation, to: target })
-        return
-      }
+  // Double-tap : coup rapide intelligent (fondation, séquence tableau ou colonne vide pour Roi)
+  const handleQuickMove = (fromLocation: Location) => {
+    const target = findAutoMove(game, fromLocation)
+    if (target) {
+      dispatch({ type: 'MOVE_CARDS', from: fromLocation, to: target })
     }
   }
 
@@ -235,7 +233,8 @@ export function useGame(initialOptions?: DealOptions) {
     onStockClick: handleStockClick,
     onSelectOrMove: handleSelectOrMove,
     onMoveCards: (from: Location, to: Location) => dispatch({ type: 'MOVE_CARDS', from, to }),
-    onQuickMoveToFoundation: handleQuickMoveToFoundation,
+    onQuickMove: handleQuickMove,
+    onQuickMoveToFoundation: handleQuickMove,
     onUndo: () => dispatch({ type: 'UNDO' }),
     onHint: () => dispatch({ type: 'SHOW_HINT' }),
     onNewGame: (options?: DealOptions) => dispatch({ type: 'NEW_GAME', options }),

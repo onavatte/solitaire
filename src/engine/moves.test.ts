@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canMove, draw, moveCards } from './moves'
+import { canMove, draw, findAutoMove, moveCards } from './moves'
 import type { Card, GameState } from './types'
 
 function makeCard(suit: Card['suit'], rank: Card['rank'], faceUp = true): Card {
@@ -237,6 +237,61 @@ describe('moveCards & canMove', () => {
     expect(canMove(initial, from, to)).toBe(false)
     const next = moveCards(initial, from, to)
     expect(next).toBe(initial)
+  })
+})
+
+describe('findAutoMove', () => {
+  it('trouve en priorité la fondation éligible pour un As', () => {
+    const ace = makeCard('hearts', 1)
+    const state = createEmptyState({
+      tableau: [[ace], [], [], [], [], [], []],
+    })
+
+    const target = findAutoMove(state, { zone: 'tableau', column: 0 })
+    expect(target).toEqual({ zone: 'foundation', foundationIndex: 0 })
+  })
+
+  it('trouve une colonne de tableau légitime si la carte ne peut aller en fondation', () => {
+    const red7 = makeCard('hearts', 7)
+    const black8 = makeCard('spades', 8)
+    const state = createEmptyState({
+      waste: [red7],
+      tableau: [[black8], [], [], [], [], [], []],
+    })
+
+    const target = findAutoMove(state, { zone: 'waste' })
+    expect(target).toEqual({ zone: 'tableau', column: 0 })
+  })
+
+  it('envoie un Roi vers une colonne vide si le Roi provient de la défausse ou libère une carte', () => {
+    const hidden = makeCard('clubs', 3, false)
+    const king = makeCard('spades', 13)
+    const state = createEmptyState({
+      tableau: [[hidden, king], [], [], [], [], [], []],
+    })
+
+    const target = findAutoMove(state, { zone: 'tableau', column: 0, cardIndex: 1 })
+    expect(target).toEqual({ zone: 'tableau', column: 1 })
+  })
+
+  it('ne déplace pas un Roi seul sur une colonne vide vers une autre colonne vide', () => {
+    const king = makeCard('spades', 13)
+    const state = createEmptyState({
+      tableau: [[king], [], [], [], [], [], []],
+    })
+
+    const target = findAutoMove(state, { zone: 'tableau', column: 0, cardIndex: 0 })
+    expect(target).toBeNull()
+  })
+
+  it('renvoie null si aucun coup légitime n’est disponible pour la carte', () => {
+    const red7 = makeCard('hearts', 7)
+    const state = createEmptyState({
+      tableau: [[red7], [], [], [], [], [], []],
+    })
+
+    const target = findAutoMove(state, { zone: 'tableau', column: 0 })
+    expect(target).toBeNull()
   })
 })
 
