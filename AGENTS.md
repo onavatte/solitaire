@@ -4,9 +4,16 @@ PWA Klondike (React + Vite + TypeScript), style bande dessinée, pour 2 utilisat
 Lire d'abord : `docs/SPECS.md`, `docs/ARCHITECTURE.md`, `docs/BACKLOG.md`, `docs/DECISIONS.md`.
 
 ## Méthode de travail
-- L'utilisateur (architecte UI/UX, à l'aise avec Angular/React) veut **apprendre** : expliquer chaque étape **avant** de coder (quoi, pourquoi, alternatives), puis exécuter après son accord.
+- L'utilisateur (architecte UI/UX, à l'aise avec Angular/React) veut **apprendre et garder le contrôle du rythme**.
+- **Workflow strict après chaque modification** :
+  1. Expliquer chaque étape **avant** de coder (quoi, pourquoi, alternatives) et attendre l'accord.
+  2. Effectuer les modifications de fichiers et attendre que l'utilisateur approuve explicitement les diffs dans le chat.
+  3. Lancer les vérifications (`npm test`, `npm run lint`, `npm run build`), puis **proposer de commiter et pousser**.
+  4. Après accord, commiter et pousser sur `main`.
+  5. **Attendre que l'utilisateur teste réellement les modifications** (sur mobile ou desktop) et donne ses retours ou corrections.
+  6. **Ne jamais enchaîner directement sur l'étape suivante** tant que l'utilisateur n'a pas validé son test.
 - Répondre en **français**. Rester concis.
-- Travailler jalon par jalon (voir `docs/BACKLOG.md`). À la fin d'un jalon : cocher le backlog, mettre à jour `docs/DECISIONS.md` et `docs/ARCHITECTURE.md` si le design a changé, commit et push.
+- Travailler jalon par jalon (voir `docs/BACKLOG.md`). À la fin d'un jalon : cocher le backlog, mettre à jour `docs/DECISIONS.md` et `docs/ARCHITECTURE.md` si le design a changé.
 - Ne pas ajouter de dépendance sans en discuter. Ne pas élargir le périmètre (voir « Hors périmètre » dans `docs/SPECS.md`).
 
 ## Commandes

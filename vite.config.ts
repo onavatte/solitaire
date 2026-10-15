@@ -22,8 +22,8 @@ export default defineConfig({
         lang: 'fr',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#fff4d6',
-        theme_color: '#ffd23f',
+        background_color: '#14592d',
+        theme_color: '#14592d',
         start_url: base,
         scope: base,
         icons: [
