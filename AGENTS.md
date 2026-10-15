@@ -42,7 +42,7 @@ Avant de commit : lint, tests et build doivent passer (la CI bloque sinon le dé
 ## Conventions
 - TypeScript `strict` + `noUncheckedIndexedAccess` : pas de `any`, gérer les `undefined` des accès aux tableaux.
 - Prettier : sans point-virgule, guillemets simples. Textes de l'interface en français, en dur.
-- Mobile d'abord (portrait) : cibles tactiles ≥ 44 px, safe areas, respecter `prefers-reduced-motion`.
+- Mobile d'abord (portrait, téléphones Android uniquement, aucun iPhone) : cibles tactiles ≥ 44 px, safe areas, respecter `prefers-reduced-motion`.
 
 ## Pièges connus
 - Le site est servi sous `/solitaire/` : `base` de Vite vient de `BASE_PATH` (voir `vite.config.ts` et `.github/workflows/deploy.yml`). Avec un domaine perso, `BASE_PATH=/`.
