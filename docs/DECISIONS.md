@@ -16,6 +16,7 @@ Journal des décisions techniques (ADR allégé). Les plus récentes en bas.
 | 2026-10-13 | **Domaine perso reporté** | Nécessite `BASE_PATH=/` ; réinstaller l'app après changement d'URL |
 | 2026-10-14 | **Mulberry32 PRNG pur** | Aléatoire déterministe avec graine sans dépendance externe |
 | 2026-10-14 | **Autocomplétion pas-à-pas** | `autocompleteStep` unitaire pour permettre les animations visuelles en UI |
+| 2026-10-14 | **Thème classique (MVP)** | Feutrine verte et cartes standard pour le MVP ; thème comics reporté en v2 |
 
 ## Stratégie d'usage des modèles IA
 | Phase | Modèle conseillé |

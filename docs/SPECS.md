@@ -29,11 +29,12 @@ Spider, FreeCell, comptes, serveur, pubs, multijoueur, i18n.
 - Contraste AA
 - Fonctionne sans réseau
 
-## Direction artistique « Comics »
-- **Palette** : papier crème, aplats saturés (rouge, jaune, bleu), contours noirs épais (3–4 px).
-- **Typo** : titres style BD (ex. *Bangers*, *Luckiest Guy*), chiffres de cartes lisibles (ex. *Anton*).
-- **Effets** : ombres portées dures décalées, trame de points (halftone), onomatopées (« POW! », « ZAP! »), bulles pour l'indice.
-- **Cartes** : figures (V, D, R) stylisées en aplats ; dos pop-art ; SVG thémable.
-- **Victoire** : explosion de couleurs, bandeau « YOU WIN! », cartes qui rebondissent.
-- **Tokens** : variables CSS (`--ink`, `--paper`, `--accent`, `--shadow-offset`…) pour ajouter d'autres thèmes plus tard.
+## Direction artistique MVP « Classique »
+- **Palette** : feutrine verte (`#0d5e2a` ou similaire), bordures nettes, cartes blanches à coins arrondis.
+- **Typo** : police système sans-serif moderne, épurée et très lisible (chiffres et lettres bien contrastés).
+- **Cartes** : rendu vectoriel SVG précis, enseignes traditionnelles (rouge/noir), dos géométrique sobre (losanges/treillis).
+- **Tokens** : variables CSS (`--felt`, `--card-bg`, `--card-border`, `--red-suit`, `--black-suit`…) pour permettre le changement de thème ultérieur sans modifier l'UI.
+
+## Direction artistique « Comics » (reportée en v2)
+- Palette papier crème, contours noirs épais, typo BD (*Bangers*), trames halftone, onomatopées (« POW! », « ZAP! »), explosion de victoire pop-art.
 

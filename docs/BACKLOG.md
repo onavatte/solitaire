@@ -18,28 +18,25 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Indice
 - [x] Autocomplétion (victoire automatique)
 
-## Jalon 2 — UI jouable, thème neutre (≈ 1–1,5 j)
-- [ ] Plateau responsive portrait
-- [ ] Rendu des cartes en SVG
+## Jalon 2 — UI jouable, thème classique feutrine (≈ 1–1,5 j)
+- [ ] Plateau responsive portrait (feutrine verte, safe areas)
+- [ ] Rendu des cartes en SVG standard (figures nettes, enseignes, dos géométrique)
 - [ ] Tap pour sélectionner/déplacer + double-tap vers fondation
 - [ ] Drag & drop maison (Pointer Events)
-- [ ] Barre d'outils : annuler, indice, nouvelle donne, réglages
+- [ ] Barre d'outils : annuler, indice, nouvelle donne, réglages (pioche 1/3)
 - [ ] Chrono (pause en arrière-plan) et compteur de coups
+- [ ] Déclenchement autocomplétion & écran de victoire sobre
 
-## Jalon 3 — Habillage comics (≈ 1 j)
-- [ ] Tokens CSS + thème, typo BD, trame halftone
-- [ ] Vraies icônes de l'app (remplacer les provisoires)
-- [ ] Animations : distribution, retournement, déplacement, victoire
-- [ ] Onomatopées, haptique
-
-## Jalon 4 — Finitions (≈ 0,5–1 j)
-- [ ] Sauvegarde/reprise de la partie, stats
-- [ ] Mode gaucher, réduction des animations
-- [ ] Domaine perso `poudlard-home.ca` (CNAME Cloudflare, domaine dans Settings → Pages, `BASE_PATH: /`, réinstaller l'app)
+## Jalon 3 — Finitions MVP (≈ 0,5–1 j)
+- [ ] Sauvegarde/reprise de la partie (`localStorage`), stats
+- [ ] Animations Framer Motion fluides (déplacement, distribution)
+- [ ] Mode gaucher, haptique, respect de `prefers-reduced-motion`
+- [ ] Domaine perso `poudlard-home.ca` (CNAME Cloudflare, domaine dans Settings → Pages, `BASE_PATH: /`)
 - [ ] Audit Lighthouse PWA, tests sur les deux téléphones
 
-## Idées pour plus tard
-- Autres thèmes
+## Idées pour plus tard (v2)
+- Habillage comics (typo BD, halftone, onomatopées, explosions)
+- Autres thèmes (sombre, bois, moderne)
 - Solveur pour garantir des donnes gagnables
 - Défi du jour
 
