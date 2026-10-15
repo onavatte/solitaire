@@ -108,9 +108,9 @@ export const Board: React.FC<BoardProps> = ({
         position: 'relative',
       }}
     >
-      {/* Rangée supérieure : Pioche (0), Défausse (1), Espace (2), 4 Fondations (3..6) */}
+      {/* Rangée supérieure (ergonomie droitier) : 4 Fondations (0..3), Espace (4), Défausse (5), Pioche (6) */}
       <section
-        aria-label="Zone supérieure : pioche, défausse et fondations"
+        aria-label="Zone supérieure : fondations, défausse et pioche"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(7, 1fr)',
@@ -118,57 +118,7 @@ export const Board: React.FC<BoardProps> = ({
           width: '100%',
         }}
       >
-        {/* Colonne 0 : Talon / Stock */}
-        <div style={{ position: 'relative' }}>
-          <Slot
-            label={state.stock.length > 0 ? undefined : '↺'}
-            onClick={state.stock.length === 0 ? onStockClick : undefined}
-            highlight={highlightStock}
-          >
-            {state.stock.length > 0 && (
-              <CardView
-                card={state.stock[state.stock.length - 1] as Card}
-                onClick={onStockClick}
-              />
-            )}
-          </Slot>
-        </div>
-
-        {/* Colonne 1 : Défausse / Waste */}
-        <div style={{ position: 'relative' }}>
-          <Slot highlight={highlightWaste}>
-            {state.waste.length > 0 && (
-              <div
-                onPointerDown={(e) =>
-                  handlePointerDown(e, { zone: 'waste' }, [
-                    state.waste[state.waste.length - 1] as Card,
-                  ])
-                }
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={handlePointerCancel}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  opacity: isCardDragged({ zone: 'waste' }) ? 0.2 : 1,
-                  touchAction: 'none',
-                }}
-              >
-                <CardView
-                  card={state.waste[state.waste.length - 1] as Card}
-                  onDoubleClick={onWasteDoubleClick}
-                  isSelected={selectedLocation?.zone === 'waste'}
-                  isHighlighted={highlightWaste}
-                />
-              </div>
-            )}
-          </Slot>
-        </div>
-
-        {/* Colonne 2 : Espace vide séparateur */}
-        <div aria-hidden="true" />
-
-        {/* Colonnes 3, 4, 5, 6 : Fondations (cibles de drop) */}
+        {/* Colonnes 0, 1, 2, 3 : Fondations (cibles de drop) */}
         {state.foundations.map((foundation, index) => {
           const topCard = foundation[foundation.length - 1]
           return (
@@ -214,6 +164,91 @@ export const Board: React.FC<BoardProps> = ({
             </div>
           )
         })}
+
+        {/* Colonne 4 : Espace vide séparateur */}
+        <div aria-hidden="true" />
+
+        {/* Colonne 5 : Défausse / Waste (avec éventail horizontal vers la gauche) */}
+        <div style={{ position: 'relative' }}>
+          <Slot highlight={highlightWaste}>
+            {state.waste.length > 0 && (() => {
+              const maxVisible = state.drawCount === 3 ? 3 : 1
+              const count = Math.min(state.waste.length, maxVisible)
+              const visibleCards = state.waste.slice(-count)
+
+              return (
+                <>
+                  {visibleCards.map((card, idx) => {
+                    const offsetIndex = idx - (visibleCards.length - 1)
+                    const isTop = idx === visibleCards.length - 1
+
+                    if (isTop) {
+                      return (
+                        <div
+                          key={card.id}
+                          onPointerDown={(e) =>
+                            handlePointerDown(e, { zone: 'waste' }, [card])
+                          }
+                          onPointerMove={handlePointerMove}
+                          onPointerUp={handlePointerUp}
+                          onPointerCancel={handlePointerCancel}
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            zIndex: 10,
+                            opacity: isCardDragged({ zone: 'waste' }) ? 0.2 : 1,
+                            touchAction: 'none',
+                          }}
+                        >
+                          <CardView
+                            card={card}
+                            onDoubleClick={onWasteDoubleClick}
+                            isSelected={selectedLocation?.zone === 'waste'}
+                            isHighlighted={highlightWaste}
+                          />
+                        </div>
+                      )
+                    }
+
+                    // Cartes sous-jacentes visibles dépassant vers la gauche
+                    return (
+                      <div
+                        key={card.id}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          bottom: 0,
+                          left: `calc(${offsetIndex} * clamp(14px, 3.2vw, 22px))`,
+                          width: '100%',
+                          zIndex: idx + 1,
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        <CardView card={card} />
+                      </div>
+                    )
+                  })}
+                </>
+              )
+            })()}
+          </Slot>
+        </div>
+
+        {/* Colonne 6 : Talon / Pioche (Stock, sous le pouce droit) */}
+        <div style={{ position: 'relative' }}>
+          <Slot
+            label={state.stock.length > 0 ? undefined : '↺'}
+            onClick={state.stock.length === 0 ? onStockClick : undefined}
+            highlight={highlightStock}
+          >
+            {state.stock.length > 0 && (
+              <CardView
+                card={state.stock[state.stock.length - 1] as Card}
+                onClick={onStockClick}
+              />
+            )}
+          </Slot>
+        </div>
       </section>
 
       {/* Rangée inférieure : Les 7 colonnes du tableau (cibles de drop) */}
@@ -241,7 +276,7 @@ export const Board: React.FC<BoardProps> = ({
             >
               {/* Emplacement vide (pour poser un Roi si la colonne est vide) */}
               <Slot
-                label="K"
+                label="R"
                 onClick={() => onTableauEmptyClick?.(colIndex)}
               />
 
