@@ -6,3 +6,4 @@ export * from './moves'
 export * from './history'
 export * from './hint'
 export * from './autocomplete'
+

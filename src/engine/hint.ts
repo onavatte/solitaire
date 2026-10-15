@@ -106,3 +106,4 @@ export function findHint(state: GameState): Hint | null {
 
   return null
 }
+

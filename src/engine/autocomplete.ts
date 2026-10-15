@@ -71,3 +71,4 @@ export function autocompleteStep(state: GameState): GameState | null {
 
   return moveCards(state, best.from, best.to)
 }
+

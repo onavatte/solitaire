@@ -122,3 +122,4 @@ describe('autocompleteStep', () => {
     expect(stepAfter).toBeNull()
   })
 })
+
