@@ -178,9 +178,9 @@ export const Board: React.FC<BoardProps> = ({
                       width: '100%',
                       height: '100%',
                       zIndex: 2,
-                      opacity: isCardDragged({ zone: 'foundation', foundationIndex: index })
-                        ? 0.2
-                        : 1,
+                      visibility: isCardDragged({ zone: 'foundation', foundationIndex: index })
+                        ? 'hidden'
+                        : 'visible',
                       touchAction: 'none',
                     }}
                   >
@@ -245,7 +245,9 @@ export const Board: React.FC<BoardProps> = ({
                             position: 'absolute',
                             inset: 0,
                             zIndex: 10,
-                            opacity: isCardDragged({ zone: 'waste' }) ? 0.2 : 1,
+                            visibility: isCardDragged({ zone: 'waste' })
+                              ? 'hidden'
+                              : 'visible',
                             touchAction: 'none',
                           }}
                         >
@@ -407,7 +409,7 @@ export const Board: React.FC<BoardProps> = ({
                       left: 0,
                       right: 0,
                       zIndex: cardIndex + 1,
-                      opacity: draggedThisCard ? 0.2 : 1,
+                      visibility: draggedThisCard ? 'hidden' : 'visible',
                       touchAction: card.faceUp ? 'none' : 'auto',
                     }}
                   >
