@@ -173,8 +173,8 @@ export const CardView: React.FC<CardViewProps> = ({
         <div
           style={{
             position: 'absolute',
-            inset: 'auto 0 0 0',
-            height: '75%',
+            inset: 'auto 0 clamp(2px, 0.8vw, 5px) 0',
+            height: '74%',
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',

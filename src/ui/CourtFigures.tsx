@@ -16,11 +16,12 @@ export const CourtFigure: React.FC<CourtFigureProps> = ({ rank, suit: _suit, cla
     // VALET : Silhouette stylisée exacte fournie
     return (
       <svg
-        viewBox="-47 -57 488 379"
+        viewBox="-47 -57 488 368"
         width="100%"
         height="100%"
         className={className}
         aria-hidden="true"
+        preserveAspectRatio="xMidYMax meet"
         style={{ display: 'block' }}
         fill="currentColor"
       >
@@ -38,11 +39,12 @@ export const CourtFigure: React.FC<CourtFigureProps> = ({ rank, suit: _suit, cla
     // DAME : Silhouette stylisée exacte fournie
     return (
       <svg
-        viewBox="202 61 609 452"
+        viewBox="202 61 609 435"
         width="100%"
         height="100%"
         className={className}
         aria-hidden="true"
+        preserveAspectRatio="xMidYMax meet"
         style={{ display: 'block' }}
         fill="currentColor"
       >
@@ -59,11 +61,12 @@ export const CourtFigure: React.FC<CourtFigureProps> = ({ rank, suit: _suit, cla
   // ROI : Silhouette stylisée exacte avec épée, couronne géométrique et profil
   return (
     <svg
-      viewBox="0 0 393 302"
+      viewBox="0 0 393 293"
       width="100%"
       height="100%"
       className={className}
       aria-hidden="true"
+      preserveAspectRatio="xMidYMax meet"
       style={{ display: 'block' }}
       fill="currentColor"
     >
