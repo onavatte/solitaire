@@ -55,23 +55,7 @@ body {
 
 /* Animations des cartes (Option A - CSS natif & GPU) */
 
-/* 1. Distribution initiale */
-@keyframes dealCard {
-  0% {
-    opacity: 0;
-    transform: translate3d(50px, -50px, 0) scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-.card-dealing {
-  animation: dealCard 0.28s cubic-bezier(0.2, 0.85, 0.25, 1) backwards;
-}
-
-/* 2. Révélation d'une carte (retournement 3D) */
+/* Révélation d'une carte (retournement 3D) */
 @keyframes cardReveal {
   0% {
     transform: rotateY(90deg) scale(0.95);
@@ -89,7 +73,6 @@ body {
 
 /* Respect strict de prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  .card-dealing,
   .card-revealed {
     animation: none !important;
     transition: none !important;

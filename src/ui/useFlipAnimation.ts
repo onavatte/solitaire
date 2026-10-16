@@ -11,20 +11,16 @@ interface FlipOptions {
  * pioche, défausse et fondations sans aucune bibliothèque externe.
  */
 export function useFlipAnimation(
-  dependency: unknown,
+  moves: number,
   options: FlipOptions = {},
 ) {
   const containerRef = useRef<HTMLElement | null>(null)
   const prevRectsRef = useRef<Map<string, DOMRect>>(new Map())
+  const prevMovesRef = useRef<number>(moves)
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return
     if (options.disabled) return
-
-    // Respect strict de prefers-reduced-motion
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-      return
-    }
 
     const container = containerRef.current
     if (!container) return
@@ -32,6 +28,7 @@ export function useFlipAnimation(
     const cardElements = container.querySelectorAll<HTMLElement>('[data-card-id]')
     const currentRects = new Map<string, DOMRect>()
     const prevRects = prevRectsRef.current
+    const isNewGameOrInitial = moves === 0 || moves < prevMovesRef.current
 
     // Mesurer toutes les positions 'Last' du DOM
     cardElements.forEach((el) => {
@@ -41,9 +38,24 @@ export function useFlipAnimation(
       }
     })
 
+    // Mémoriser le nombre de coups
+    prevMovesRef.current = moves
+
+    // Si c'est une nouvelle donne ou le chargement initial, on ne déclenche pas de transition FLIP
+    if (isNewGameOrInitial) {
+      prevRectsRef.current = currentRects
+      return
+    }
+
+    // Respect strict de prefers-reduced-motion
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      prevRectsRef.current = currentRects
+      return
+    }
+
     const duration = options.duration ?? 200
 
-    // Pour chaque carte qui existait déjà, animer la transition de l'ancienne vers la nouvelle position
+    // Pour chaque carte qui a bougé, animer de l'ancienne vers la nouvelle position
     cardElements.forEach((el) => {
       const id = el.dataset.cardId
       if (!id) return
@@ -55,9 +67,12 @@ export function useFlipAnimation(
         const dx = prev.left - current.left
         const dy = prev.top - current.top
 
-        // Seuil d'au moins 2px pour éviter le micro-jitter
+        // Seuil d'au moins 2px pour filtrer le micro-jitter
         if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-          // Invert : déplacer instantanément l'élément à son ancienne position
+          // Sauvegarder le z-index de base pour ne jamais le perdre
+          const baseZIndex = el.dataset.baseZIndex ?? el.style.zIndex
+
+          // Invert : replacer instantanément l'élément à son ancienne position
           el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`
           el.style.transition = 'none'
           el.style.zIndex = '500'
@@ -70,7 +85,8 @@ export function useFlipAnimation(
             const cleanup = () => {
               el.style.transform = ''
               el.style.transition = ''
-              el.style.zIndex = ''
+              // Restaurer le z-index exact d'origine
+              el.style.zIndex = baseZIndex
               el.removeEventListener('transitionend', cleanup)
             }
 
@@ -83,8 +99,7 @@ export function useFlipAnimation(
 
     // Enregistrer les positions pour le prochain mouvement
     prevRectsRef.current = currentRects
-  }, [dependency, options.disabled, options.duration])
+  }, [moves, options.disabled, options.duration])
 
   return containerRef
 }
-

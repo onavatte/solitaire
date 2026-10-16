@@ -44,8 +44,6 @@ export const Board: React.FC<BoardProps> = ({
   highlightTableau,
   selectedLocation,
 }) => {
-  const boardRef = useFlipAnimation(state, { disabled: false })
-
   const {
     dragged,
     handlePointerDown,
@@ -74,6 +72,8 @@ export const Board: React.FC<BoardProps> = ({
     },
     canDragCard,
   })
+
+  const boardRef = useFlipAnimation(state.moves, { disabled: Boolean(dragged) })
 
   // Vérifie si une carte fait partie de la séquence en cours de glissement
   const isCardDragged = (loc: Location): boolean => {
@@ -315,20 +315,15 @@ export const Board: React.FC<BoardProps> = ({
                   highlightTableau?.cardIndex === cardIndex
 
                 const draggedThisCard = isCardDragged(cardLoc)
-                const isDealing = state.moves === 0
                 const isTopRevealed =
                   card.faceUp && cardIndex === column.length - 1 && state.moves > 0
-                const animationClass = isDealing
-                  ? 'card-dealing'
-                  : isTopRevealed
-                    ? 'card-revealed'
-                    : undefined
 
                 return (
                   <div
                     key={card.id}
                     data-card-id={card.id}
-                    className={animationClass}
+                    data-base-z-index={cardIndex + 1}
+                    className={isTopRevealed ? 'card-revealed' : undefined}
                     onPointerDown={
                       card.faceUp
                         ? (e) =>
@@ -350,9 +345,6 @@ export const Board: React.FC<BoardProps> = ({
                       zIndex: cardIndex + 1,
                       opacity: draggedThisCard ? 0.2 : 1,
                       touchAction: card.faceUp ? 'none' : 'auto',
-                      animationDelay: isDealing
-                        ? `${(colIndex * 3 + cardIndex) * 20}ms`
-                        : undefined,
                     }}
                   >
                     <CardView
