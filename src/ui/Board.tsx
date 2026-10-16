@@ -374,15 +374,12 @@ export const Board: React.FC<BoardProps> = ({
                   highlightTableau?.cardIndex === cardIndex
 
                 const draggedThisCard = isCardDragged(cardLoc)
-                const isTopRevealed =
-                  card.faceUp && cardIndex === column.length - 1 && state.moves > 0
 
                 return (
                   <div
                     key={card.id}
                     data-card-id={card.id}
                     data-base-z-index={cardIndex + 1}
-                    className={isTopRevealed ? 'card-revealed' : undefined}
                     onPointerDown={
                       card.faceUp
                         ? (e) =>

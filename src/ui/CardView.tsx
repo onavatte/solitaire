@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import type { Card } from '../engine'
 import { colorOf } from '../engine'
 import { CourtFigure } from './CourtFigures'
@@ -26,6 +26,24 @@ export const CardView: React.FC<CardViewProps> = ({
   const textColor = isRed ? 'var(--red-suit)' : 'var(--black-suit)'
   const label = rankLabel(card.rank)
   const isCourt = card.rank >= 11 // Valet, Dame, Roi
+
+  // Détection d'un vrai retournement : passage de face cachée (false) à face visible (true)
+  const prevFaceUpRef = useRef(card.faceUp)
+  const [justFlipped, setJustFlipped] = useState(false)
+
+  useEffect(() => {
+    if (!prevFaceUpRef.current && card.faceUp) {
+      setJustFlipped(true)
+      const timer = setTimeout(() => {
+        setJustFlipped(false)
+      }, 250)
+      return () => clearTimeout(timer)
+    }
+    prevFaceUpRef.current = card.faceUp
+  }, [card.faceUp])
+
+  const flipClass = justFlipped ? 'card-revealed' : undefined
+  const resolvedClassName = [className, flipClass].filter(Boolean).join(' ') || undefined
 
   // Dos de carte classique avec motif géométrique SVG
   if (!card.faceUp) {
@@ -89,7 +107,7 @@ export const CardView: React.FC<CardViewProps> = ({
         e.stopPropagation()
         e.preventDefault()
       }}
-      className={className}
+      className={resolvedClassName}
       style={{
         position: 'relative',
         width: '100%',
