@@ -222,7 +222,7 @@ export const Board: React.FC<BoardProps> = ({
                         pointerEvents: 'none',
                       }}
                     >
-                      <CardView card={underWaste} />
+                      <CardView card={underWaste} disableFlipAnimation />
                     </div>
                   )}
 
@@ -235,6 +235,7 @@ export const Board: React.FC<BoardProps> = ({
                         <div
                           key={card.id}
                           data-card-id={card.id}
+                          data-base-z-index={10}
                           onPointerDown={(e) =>
                             handlePointerDown(e, { zone: 'waste' }, [card])
                           }
@@ -255,6 +256,7 @@ export const Board: React.FC<BoardProps> = ({
                             card={card}
                             isSelected={selectedLocation?.zone === 'waste'}
                             isHighlighted={highlightWaste}
+                            disableFlipAnimation
                           />
                         </div>
                       )
@@ -265,6 +267,7 @@ export const Board: React.FC<BoardProps> = ({
                       <div
                         key={card.id}
                         data-card-id={card.id}
+                        data-base-z-index={idx + 2}
                         style={{
                           position: 'absolute',
                           top: 0,
@@ -275,7 +278,7 @@ export const Board: React.FC<BoardProps> = ({
                           pointerEvents: 'none',
                         }}
                       >
-                        <CardView card={card} />
+                        <CardView card={card} disableFlipAnimation />
                       </div>
                     )
                   })}
@@ -293,10 +296,13 @@ export const Board: React.FC<BoardProps> = ({
             highlight={highlightStock}
           >
             {state.stock.length > 0 && (() => {
-              const topStock = state.stock[state.stock.length - 1]
+              const count = Math.min(state.stock.length, state.drawCount)
+              const toDraw = state.stock.slice(-count)
               const underStock =
-                state.stock.length >= 2 ? state.stock[state.stock.length - 2] : null
-              if (!topStock) return null
+                state.stock.length > count
+                  ? state.stock[state.stock.length - count - 1]
+                  : null
+
               return (
                 <>
                   {underStock && (
@@ -311,17 +317,27 @@ export const Board: React.FC<BoardProps> = ({
                       <CardView card={underStock} />
                     </div>
                   )}
-                  <div
-                    data-card-id={topStock.id}
-                    style={{
-                      position: 'relative',
-                      width: '100%',
-                      height: '100%',
-                      zIndex: 2,
-                    }}
-                  >
-                    <CardView card={topStock} onClick={onStockClick} />
-                  </div>
+
+                  {toDraw.map((card, idx) => {
+                    const isTop = idx === toDraw.length - 1
+                    return (
+                      <div
+                        key={card.id}
+                        data-card-id={card.id}
+                        data-base-z-index={idx + 2}
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          zIndex: idx + 2,
+                          touchAction: isTop ? 'manipulation' : 'none',
+                          cursor: isTop ? 'pointer' : 'default',
+                        }}
+                        onClick={isTop ? onStockClick : undefined}
+                      >
+                        <CardView card={card} />
+                      </div>
+                    )
+                  })}
                 </>
               )
             })()}

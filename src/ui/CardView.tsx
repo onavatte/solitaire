@@ -12,6 +12,7 @@ interface CardViewProps {
   onClick?: () => void
   style?: React.CSSProperties
   className?: string
+  disableFlipAnimation?: boolean
 }
 
 export const CardView: React.FC<CardViewProps> = ({
@@ -21,6 +22,7 @@ export const CardView: React.FC<CardViewProps> = ({
   onClick,
   style,
   className,
+  disableFlipAnimation,
 }) => {
   const isRed = colorOf(card.suit) === 'red'
   const textColor = isRed ? 'var(--red-suit)' : 'var(--black-suit)'
@@ -32,6 +34,10 @@ export const CardView: React.FC<CardViewProps> = ({
   const [justFlipped, setJustFlipped] = useState(false)
 
   useEffect(() => {
+    if (disableFlipAnimation) {
+      prevFaceUpRef.current = card.faceUp
+      return
+    }
     if (!prevFaceUpRef.current && card.faceUp) {
       setJustFlipped(true)
       const timer = setTimeout(() => {
@@ -40,7 +46,7 @@ export const CardView: React.FC<CardViewProps> = ({
       return () => clearTimeout(timer)
     }
     prevFaceUpRef.current = card.faceUp
-  }, [card.faceUp])
+  }, [card.faceUp, disableFlipAnimation])
 
   const flipClass = justFlipped ? 'card-revealed' : undefined
   const resolvedClassName = [className, flipClass].filter(Boolean).join(' ') || undefined

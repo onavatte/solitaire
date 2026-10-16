@@ -78,11 +78,12 @@ export function useFlipAnimation(
         if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
           // Sauvegarder le z-index de base pour ne jamais le perdre
           const baseZIndex = el.dataset.baseZIndex ?? el.style.zIndex
+          const numericBaseZ = parseInt(baseZIndex || '0', 10) || 0
 
           // Invert : replacer instantanément l'élément à son ancienne position
           el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`
           el.style.transition = 'none'
-          el.style.zIndex = '500'
+          el.style.zIndex = String(500 + numericBaseZ)
           el.style.willChange = 'transform'
 
           // Forcer le reflow synchrone pour empêcher tout micro-flash de la carte à destination
