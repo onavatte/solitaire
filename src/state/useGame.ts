@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react'
-import type { DealOptions, GameHistory, Hint, Location } from '../engine'
+import type { DealOptions, GameHistory, GameState, Hint, Location } from '../engine'
 import {
   autocompleteStep,
   canAutocomplete,
@@ -13,6 +13,17 @@ import {
   recordMove,
   undo,
 } from '../engine'
+import type { GameStats } from './persistence'
+import {
+  clearSavedGame,
+  loadPreferences,
+  loadSavedGame,
+  loadStats,
+  recordGameStarted,
+  recordGameWon,
+  resetStats,
+  saveCurrentGame,
+} from './persistence'
 
 export interface GameStoreState {
   readonly history: GameHistory
@@ -20,6 +31,8 @@ export interface GameStoreState {
   readonly activeHint: Hint | null
   readonly isPaused: boolean
   readonly isAutocompleting: boolean
+  readonly hasCountedPlayed: boolean
+  readonly stats: GameStats
 }
 
 export type GameAction =
@@ -35,15 +48,74 @@ export type GameAction =
   | { type: 'AUTOCOMPLETE_STEP' }
   | { type: 'TICK_TIME'; deltaMs: number }
   | { type: 'SET_PAUSED'; isPaused: boolean }
+  | { type: 'RESET_STATS' }
 
 function createInitialStore(options?: DealOptions): GameStoreState {
-  const initialGame = dealGame(options)
+  const stats = loadStats()
+  const saved = loadSavedGame()
+  const targetDrawCount = options?.drawCount ?? loadPreferences().drawCount
+
+  if (
+    saved &&
+    (!options?.drawCount || options.drawCount === saved.history.present.drawCount)
+  ) {
+    return {
+      history: saved.history,
+      selectedLocation: null,
+      activeHint: null,
+      isPaused: false,
+      isAutocompleting: false,
+      hasCountedPlayed: saved.hasCountedPlayed,
+      stats,
+    }
+  }
+
+  const initialGame = dealGame({ drawCount: targetDrawCount, seed: options?.seed })
   return {
     history: initHistory(initialGame),
     selectedLocation: null,
     activeHint: null,
     isPaused: false,
     isAutocompleting: false,
+    hasCountedPlayed: false,
+    stats,
+  }
+}
+
+function applyGameMove(
+  state: GameStoreState,
+  nextGame: GameState,
+): GameStoreState {
+  if (nextGame === state.history.present) {
+    return state
+  }
+
+  let nextStats = state.stats
+  let hasCounted = state.hasCountedPlayed
+
+  // Comptabiliser la partie jouée dès le premier coup
+  if (!hasCounted && nextGame.moves > 0) {
+    nextStats = recordGameStarted(nextStats, nextGame.drawCount)
+    hasCounted = true
+  }
+
+  // Comptabiliser la victoire
+  if (nextGame.status === 'won' && state.history.present.status !== 'won') {
+    nextStats = recordGameWon(
+      nextStats,
+      nextGame.drawCount,
+      nextGame.elapsedMs,
+      nextGame.moves,
+    )
+  }
+
+  return {
+    ...state,
+    history: recordMove(state.history, nextGame),
+    selectedLocation: null,
+    activeHint: null,
+    hasCountedPlayed: hasCounted,
+    stats: nextStats,
   }
 }
 
@@ -51,28 +123,12 @@ function gameReducer(state: GameStoreState, action: GameAction): GameStoreState 
   switch (action.type) {
     case 'DRAW': {
       const nextGame = draw(state.history.present)
-      if (nextGame === state.history.present) {
-        return state
-      }
-      return {
-        ...state,
-        history: recordMove(state.history, nextGame),
-        selectedLocation: null,
-        activeHint: null,
-      }
+      return applyGameMove(state, nextGame)
     }
 
     case 'MOVE_CARDS': {
       const nextGame = moveCards(state.history.present, action.from, action.to)
-      if (nextGame === state.history.present) {
-        return state
-      }
-      return {
-        ...state,
-        history: recordMove(state.history, nextGame),
-        selectedLocation: null,
-        activeHint: null,
-      }
+      return applyGameMove(state, nextGame)
     }
 
     case 'SELECT_LOCATION': {
@@ -112,7 +168,17 @@ function gameReducer(state: GameStoreState, action: GameAction): GameStoreState 
     }
 
     case 'NEW_GAME': {
-      return createInitialStore(action.options)
+      clearSavedGame()
+      const initialGame = dealGame(action.options)
+      return {
+        history: initHistory(initialGame),
+        selectedLocation: null,
+        activeHint: null,
+        isPaused: false,
+        isAutocompleting: false,
+        hasCountedPlayed: false,
+        stats: state.stats,
+      }
     }
 
     case 'START_AUTOCOMPLETE': {
@@ -139,12 +205,18 @@ function gameReducer(state: GameStoreState, action: GameAction): GameStoreState 
           isAutocompleting: false,
         }
       }
+      const nextStore = applyGameMove(state, nextGame)
+      return {
+        ...nextStore,
+        isAutocompleting: nextGame.status !== 'won',
+      }
+    }
+
+    case 'RESET_STATS': {
+      const reset = resetStats()
       return {
         ...state,
-        history: recordMove(state.history, nextGame),
-        selectedLocation: null,
-        activeHint: null,
-        isAutocompleting: nextGame.status !== 'won',
+        stats: reset,
       }
     }
 
@@ -264,8 +336,21 @@ export function useGame(initialOptions?: DealOptions) {
     }
   }
 
+  // Sauvegarde automatique de la partie en cours
+  useEffect(() => {
+    if (store.history.present.status === 'playing') {
+      saveCurrentGame({
+        history: store.history,
+        hasCountedPlayed: store.hasCountedPlayed,
+      })
+    } else if (store.history.present.status === 'won') {
+      clearSavedGame()
+    }
+  }, [store.history, store.hasCountedPlayed])
+
   return {
     game,
+    stats: store.stats,
     canUndo: store.history.past.length > 0 && !store.isAutocompleting,
     selectedLocation: store.selectedLocation,
     activeHint: store.activeHint,
@@ -283,6 +368,7 @@ export function useGame(initialOptions?: DealOptions) {
     onUndo: () => dispatch({ type: 'UNDO' }),
     onHint: () => dispatch({ type: 'SHOW_HINT' }),
     onNewGame: (options?: DealOptions) => dispatch({ type: 'NEW_GAME', options }),
+    onResetStats: () => dispatch({ type: 'RESET_STATS' }),
     onAutocompleteStep: () => dispatch({ type: 'AUTOCOMPLETE_STEP' }),
   }
 }

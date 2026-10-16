@@ -9,6 +9,7 @@ interface ToolbarProps {
   onHint: () => void
   onNewGame: () => void
   onToggleDrawCount: () => void
+  onOpenStats: () => void
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -20,6 +21,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onHint,
   onNewGame,
   onToggleDrawCount,
+  onOpenStats,
 }) => {
   const totalSeconds = Math.floor(elapsedMs / 1000)
   const minutes = Math.floor(totalSeconds / 60)
@@ -40,7 +42,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       }}
     >
       {/* Statistiques et mode de pioche */}
-      <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', fontSize: '0.85rem', fontWeight: 500 }}>
+      <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', fontSize: '0.85rem', fontWeight: 500 }}>
         <div>
           <span style={{ color: 'var(--felt-text-muted)', marginRight: '0.2rem' }}>Temps</span>
           <span>{formattedTime}</span>
@@ -66,6 +68,28 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           }}
         >
           {drawCount === 1 ? '1 carte' : '3 cartes'}
+        </button>
+        <button
+          type="button"
+          onClick={onOpenStats}
+          title="Consulter les statistiques"
+          aria-label="Statistiques"
+          style={{
+            minHeight: '36px',
+            minWidth: '36px',
+            padding: '0.2rem 0.4rem',
+            backgroundColor: 'var(--btn-bg)',
+            color: 'var(--felt-text)',
+            border: '1px solid var(--toolbar-border)',
+            borderRadius: '4px',
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          📊
         </button>
       </div>
 

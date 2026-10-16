@@ -1,13 +1,16 @@
 import { useState } from 'react'
+import { savePreferences } from './state/persistence'
 import { useGame } from './state/useGame'
 import { Board } from './ui/Board'
+import { StatsModal } from './ui/StatsModal'
 import { Toolbar } from './ui/Toolbar'
 import { UpdatePrompt } from './ui/UpdatePrompt'
 
 export default function App() {
-  const [drawCount, setDrawCount] = useState<1 | 3>(1)
+  const [isStatsOpen, setIsStatsOpen] = useState(false)
   const {
     game,
+    stats,
     canUndo,
     selectedLocation,
     activeHint,
@@ -21,7 +24,10 @@ export default function App() {
     onUndo,
     onHint,
     onNewGame,
-  } = useGame({ drawCount })
+    onResetStats,
+  } = useGame()
+
+  const drawCount = game.drawCount
 
   // Calcul des surbrillances pour l'indice visuel
   const highlightStock = activeHint?.type === 'draw'
@@ -45,7 +51,7 @@ export default function App() {
 
   const handleToggleDrawCount = () => {
     const nextDrawCount: 1 | 3 = drawCount === 1 ? 3 : 1
-    setDrawCount(nextDrawCount)
+    savePreferences({ drawCount: nextDrawCount })
     onNewGame({ drawCount: nextDrawCount })
   }
 
@@ -149,26 +155,49 @@ export default function App() {
             }}
           >
             <h2 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0' }}>Victoire ! 🏆</h2>
-            <p style={{ margin: '0 0 1.5rem 0', color: 'var(--felt-text-muted)' }}>
-              Bravo, vous avez résolu la donne en {game.moves} coups !
+            <p style={{ margin: '0 0 1rem 0', color: 'var(--felt-text-muted)', lineHeight: 1.5 }}>
+              Donne résolue en <strong>{game.moves} coups</strong>
+              <br />
+              Temps : <strong>{Math.floor(game.elapsedMs / 60000)} min {Math.floor((game.elapsedMs % 60000) / 1000)} s</strong>
             </p>
-            <button
-              type="button"
-              onClick={handleStartNewGame}
-              style={{
-                minHeight: '44px',
-                padding: '0.75rem 1.5rem',
-                backgroundColor: 'var(--highlight-color)',
-                color: '#111111',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 700,
-                fontSize: '1rem',
-                cursor: 'pointer',
-              }}
-            >
-              Rejouer une partie
-            </button>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              <button
+                type="button"
+                onClick={handleStartNewGame}
+                style={{
+                  minHeight: '44px',
+                  padding: '0.75rem 1.5rem',
+                  backgroundColor: 'var(--highlight-color)',
+                  color: '#111111',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Rejouer une partie
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsStatsOpen(true)}
+                style={{
+                  minHeight: '44px',
+                  padding: '0.6rem 1.2rem',
+                  backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                  color: 'var(--felt-text)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Voir mes statistiques 📊
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -183,6 +212,15 @@ export default function App() {
         onHint={onHint}
         onNewGame={handleStartNewGame}
         onToggleDrawCount={handleToggleDrawCount}
+        onOpenStats={() => setIsStatsOpen(true)}
+      />
+
+      {/* Modal des statistiques */}
+      <StatsModal
+        stats={stats}
+        isOpen={isStatsOpen}
+        onClose={() => setIsStatsOpen(false)}
+        onReset={onResetStats}
       />
 
       {/* Notification de mise à jour PWA */}

@@ -35,7 +35,7 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Nouvelles icônes PWA classiques feutrine (remplacer le jaune "comics" de `public/favicon.svg` et régénérer)
 - [x] Couleur de barre de statut mobile (`theme_color` PWA et `meta theme-color`) assortie au vert feutrine
 - [x] Graphismes & figures : disposition mobile (rang + enseigne horizontaux), figures SVG (Valet, Dame, Roi) et grand symbole central
-- [ ] Sauvegarde/reprise de la partie (`localStorage`), stats
+- [x] Sauvegarde/reprise de la partie (`localStorage`), stats
 - [ ] Animations Framer Motion fluides (déplacement, distribution)
 - [ ] Mode gaucher, haptique, respect de `prefers-reduced-motion`
 - [ ] Domaine perso `poudlard-home.ca` (CNAME Cloudflare, domaine dans Settings → Pages, `BASE_PATH: /`)
