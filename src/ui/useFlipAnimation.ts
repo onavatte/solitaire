@@ -76,8 +76,12 @@ export function useFlipAnimation(
           el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`
           el.style.transition = 'none'
           el.style.zIndex = '500'
+          el.style.willChange = 'transform'
 
-          // Play : animer vers (0, 0) au frame suivant
+          // Forcer le reflow synchrone pour empêcher tout micro-flash de la carte à destination
+          void el.offsetHeight
+
+          // Play : animer vers (0, 0)
           requestAnimationFrame(() => {
             el.style.transition = `transform ${duration}ms cubic-bezier(0.2, 0.85, 0.25, 1)`
             el.style.transform = 'translate3d(0, 0, 0)'
@@ -85,6 +89,7 @@ export function useFlipAnimation(
             const cleanup = () => {
               el.style.transform = ''
               el.style.transition = ''
+              el.style.willChange = ''
               // Restaurer le z-index exact d'origine
               el.style.zIndex = baseZIndex
               el.removeEventListener('transitionend', cleanup)

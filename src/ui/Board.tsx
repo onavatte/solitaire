@@ -125,6 +125,7 @@ export const Board: React.FC<BoardProps> = ({
         {/* Colonnes 0, 1, 2, 3 : Fondations (cibles de drop) */}
         {state.foundations.map((foundation, index) => {
           const topCard = foundation[foundation.length - 1]
+          const underCard = foundation.length >= 2 ? foundation[foundation.length - 2] : null
           return (
             <div
               key={`foundation-${index}`}
@@ -137,6 +138,20 @@ export const Board: React.FC<BoardProps> = ({
                 onClick={() => onFoundationClick?.(index)}
                 highlight={highlightFoundationIndex === index}
               >
+                {/* Carte sous-jacente conservée visible pendant le vol d'arrivée de topCard */}
+                {underCard && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      zIndex: 1,
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <CardView card={underCard} />
+                  </div>
+                )}
+
                 {topCard && (
                   <div
                     data-card-id={topCard.id}
@@ -151,8 +166,10 @@ export const Board: React.FC<BoardProps> = ({
                     onPointerUp={handlePointerUp}
                     onPointerCancel={handlePointerCancel}
                     style={{
+                      position: 'relative',
                       width: '100%',
                       height: '100%',
+                      zIndex: 2,
                       opacity: isCardDragged({ zone: 'foundation', foundationIndex: index })
                         ? 0.2
                         : 1,
@@ -180,9 +197,27 @@ export const Board: React.FC<BoardProps> = ({
               const maxVisible = state.drawCount === 3 ? 3 : 1
               const count = Math.min(state.waste.length, maxVisible)
               const visibleCards = state.waste.slice(-count)
+              // Carte sous-jacente pour éviter tout vide visuel pendant l'arrivée d'une carte
+              const underWaste =
+                state.waste.length > count
+                  ? state.waste[state.waste.length - count - 1]
+                  : null
 
               return (
                 <>
+                  {underWaste && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        zIndex: 1,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <CardView card={underWaste} />
+                    </div>
+                  )}
+
                   {visibleCards.map((card, idx) => {
                     const offsetIndex = idx - (visibleCards.length - 1)
                     const isTop = idx === visibleCards.length - 1
@@ -226,7 +261,7 @@ export const Board: React.FC<BoardProps> = ({
                           bottom: 0,
                           left: `calc(${offsetIndex} * clamp(14px, 3.2vw, 22px))`,
                           width: '100%',
-                          zIndex: idx + 1,
+                          zIndex: idx + 2,
                           pointerEvents: 'none',
                         }}
                       >
@@ -249,11 +284,35 @@ export const Board: React.FC<BoardProps> = ({
           >
             {state.stock.length > 0 && (() => {
               const topStock = state.stock[state.stock.length - 1]
+              const underStock =
+                state.stock.length >= 2 ? state.stock[state.stock.length - 2] : null
               if (!topStock) return null
               return (
-                <div data-card-id={topStock.id} style={{ width: '100%', height: '100%' }}>
-                  <CardView card={topStock} onClick={onStockClick} />
-                </div>
+                <>
+                  {underStock && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        zIndex: 1,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <CardView card={underStock} />
+                    </div>
+                  )}
+                  <div
+                    data-card-id={topStock.id}
+                    style={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '100%',
+                      zIndex: 2,
+                    }}
+                  >
+                    <CardView card={topStock} onClick={onStockClick} />
+                  </div>
+                </>
               )
             })()}
           </Slot>
