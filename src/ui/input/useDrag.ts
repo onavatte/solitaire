@@ -8,6 +8,7 @@ export interface DraggedSequence {
   currentPos: { x: number; y: number }
   grabOffset: { x: number; y: number }
   width: number
+  isSnapping?: boolean
 }
 
 interface UseDragOptions {
@@ -101,19 +102,52 @@ export function useDrag({ onDrop, onTap, onDoubleTap, canDragCard }: UseDragOpti
           .elementFromPoint(e.clientX, e.clientY)
           ?.closest<HTMLElement>('[data-drop-zone]')
 
+        let dropped = false
         if (dropTarget) {
           const zone = dropTarget.dataset.dropZone
           if (zone === 'tableau') {
             const col = Number.parseInt(dropTarget.dataset.dropCol ?? '', 10)
             if (!Number.isNaN(col)) {
               onDrop(from, { zone: 'tableau', column: col })
+              dropped = true
             }
           } else if (zone === 'foundation') {
             const fIndex = Number.parseInt(dropTarget.dataset.dropFoundation ?? '', 10)
             if (!Number.isNaN(fIndex)) {
               onDrop(from, { zone: 'foundation', foundationIndex: fIndex })
+              dropped = true
             }
           }
+        }
+
+        if (dropped) {
+          pendingSequenceRef.current = null
+          isDraggingRef.current = false
+          setDragged(null)
+        } else {
+          // Snap-back fluide vers la position d'origine
+          const currentPending = pendingSequenceRef.current
+          const prefersReduced =
+            typeof window !== 'undefined' &&
+            window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+          if (currentPending && !prefersReduced) {
+            setDragged({
+              ...currentPending,
+              currentPos: {
+                x: currentPending.originPos.x + currentPending.grabOffset.x,
+                y: currentPending.originPos.y + currentPending.grabOffset.y,
+              },
+              isSnapping: true,
+            })
+            setTimeout(() => {
+              setDragged(null)
+            }, 180)
+          } else {
+            setDragged(null)
+          }
+          pendingSequenceRef.current = null
+          isDraggingRef.current = false
         }
       } else {
         // Clic ou tap sans mouvement
@@ -140,6 +174,9 @@ export function useDrag({ onDrop, onTap, onDoubleTap, canDragCard }: UseDragOpti
             onTap(from)
           }
         }
+        pendingSequenceRef.current = null
+        isDraggingRef.current = false
+        setDragged(null)
       }
 
       // Nettoyage
@@ -150,10 +187,6 @@ export function useDrag({ onDrop, onTap, onDoubleTap, canDragCard }: UseDragOpti
       } catch {
         // Ignorer si la capture était déjà relâchée
       }
-
-      pendingSequenceRef.current = null
-      isDraggingRef.current = false
-      setDragged(null)
     },
     [onDrop, onTap, onDoubleTap],
   )

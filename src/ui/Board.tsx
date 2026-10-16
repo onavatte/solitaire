@@ -1,9 +1,10 @@
 import React from 'react'
-import type { Card, GameState, Location } from '../engine'
+import type { GameState, Location } from '../engine'
 import { CardView } from './CardView'
 import { DragOverlay } from './DragOverlay'
 import { Slot } from './Slot'
 import { useDrag } from './input/useDrag'
+import { useFlipAnimation } from './useFlipAnimation'
 
 interface BoardProps {
   state: GameState
@@ -43,6 +44,8 @@ export const Board: React.FC<BoardProps> = ({
   highlightTableau,
   selectedLocation,
 }) => {
+  const boardRef = useFlipAnimation(state, { disabled: false })
+
   const {
     dragged,
     handlePointerDown,
@@ -91,6 +94,7 @@ export const Board: React.FC<BoardProps> = ({
 
   return (
     <main
+      ref={boardRef as React.RefObject<HTMLElement>}
       style={{
         flex: 1,
         display: 'flex',
@@ -135,6 +139,7 @@ export const Board: React.FC<BoardProps> = ({
               >
                 {topCard && (
                   <div
+                    data-card-id={topCard.id}
                     onPointerDown={(e) =>
                       handlePointerDown(
                         e,
@@ -186,6 +191,7 @@ export const Board: React.FC<BoardProps> = ({
                       return (
                         <div
                           key={card.id}
+                          data-card-id={card.id}
                           onPointerDown={(e) =>
                             handlePointerDown(e, { zone: 'waste' }, [card])
                           }
@@ -213,6 +219,7 @@ export const Board: React.FC<BoardProps> = ({
                     return (
                       <div
                         key={card.id}
+                        data-card-id={card.id}
                         style={{
                           position: 'absolute',
                           top: 0,
@@ -240,12 +247,15 @@ export const Board: React.FC<BoardProps> = ({
             onClick={state.stock.length === 0 ? onStockClick : undefined}
             highlight={highlightStock}
           >
-            {state.stock.length > 0 && (
-              <CardView
-                card={state.stock[state.stock.length - 1] as Card}
-                onClick={onStockClick}
-              />
-            )}
+            {state.stock.length > 0 && (() => {
+              const topStock = state.stock[state.stock.length - 1]
+              if (!topStock) return null
+              return (
+                <div data-card-id={topStock.id} style={{ width: '100%', height: '100%' }}>
+                  <CardView card={topStock} onClick={onStockClick} />
+                </div>
+              )
+            })()}
           </Slot>
         </div>
       </section>
@@ -305,10 +315,20 @@ export const Board: React.FC<BoardProps> = ({
                   highlightTableau?.cardIndex === cardIndex
 
                 const draggedThisCard = isCardDragged(cardLoc)
+                const isDealing = state.moves === 0
+                const isTopRevealed =
+                  card.faceUp && cardIndex === column.length - 1 && state.moves > 0
+                const animationClass = isDealing
+                  ? 'card-dealing'
+                  : isTopRevealed
+                    ? 'card-revealed'
+                    : undefined
 
                 return (
                   <div
                     key={card.id}
+                    data-card-id={card.id}
+                    className={animationClass}
                     onPointerDown={
                       card.faceUp
                         ? (e) =>
@@ -330,6 +350,9 @@ export const Board: React.FC<BoardProps> = ({
                       zIndex: cardIndex + 1,
                       opacity: draggedThisCard ? 0.2 : 1,
                       touchAction: card.faceUp ? 'none' : 'auto',
+                      animationDelay: isDealing
+                        ? `${(colIndex * 3 + cardIndex) * 20}ms`
+                        : undefined,
                     }}
                   >
                     <CardView

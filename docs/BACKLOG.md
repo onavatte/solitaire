@@ -36,7 +36,7 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Couleur de barre de statut mobile (`theme_color` PWA et `meta theme-color`) assortie au vert feutrine
 - [x] Graphismes & figures : disposition mobile (rang + enseigne horizontaux), figures SVG (Valet, Dame, Roi) et grand symbole central
 - [x] Sauvegarde/reprise de la partie (`localStorage`), stats
-- [ ] Animations Framer Motion fluides (déplacement, distribution)
+- [x] Animations fluides (déplacement FLIP natif, distribution, snap-back, retournement)
 - [ ] Mode gaucher, haptique, respect de `prefers-reduced-motion`
 - [ ] Domaine perso `poudlard-home.ca` (CNAME Cloudflare, domaine dans Settings → Pages, `BASE_PATH: /`)
 - [ ] Audit Lighthouse PWA, tests sur les deux téléphones
