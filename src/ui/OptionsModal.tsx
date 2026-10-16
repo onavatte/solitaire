@@ -9,6 +9,7 @@ interface OptionsModalProps {
   onChangeDrawCount: (count: DrawCount) => void
   onToggleHaptic: () => void
   onToggleAnimations: () => void
+  onOpenLab?: () => void
 }
 
 export const OptionsModal: React.FC<OptionsModalProps> = ({
@@ -18,6 +19,7 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
   onChangeDrawCount,
   onToggleHaptic,
   onToggleAnimations,
+  onOpenLab,
 }) => {
   if (!isOpen) return null
 
@@ -234,8 +236,32 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
           </div>
         </div>
 
-        {/* Bouton Fermer */}
-        <div style={{ marginTop: '1.4rem' }}>
+        {/* Actions de pied : Labo et Fermer */}
+        <div style={{ marginTop: '1.4rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          {onOpenLab && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose()
+                onOpenLab()
+              }}
+              style={{
+                width: '100%',
+                minHeight: '40px',
+                padding: '0.5rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: 'var(--felt-text-muted)',
+                border: '1px dashed rgba(255, 255, 255, 0.25)',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+              }}
+            >
+              Laboratoire d'animations
+            </button>
+          )}
+
           <button
             type="button"
             onClick={onClose}

@@ -42,8 +42,8 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Modal Options ⚙️ : choix pioche (1 ou 3 cartes), retour haptique (on/off), désactivation des transitions
 - [ ] Animation de distribution pour les nouvelles parties
 - [ ] Animation de victoire festive (feux d'artifice / confettis sur le canvas ou SVG)
-- [ ] Ajustement du layout des figures (Valet, Dame, Roi)
-- [ ] Ajustement de l'animation de flip de carte (retournement sur place)
+- [x] Ajustement du layout des figures (Valet, Dame, Roi)
+- [x] Ajustement de l'animation de flip de carte (retournement sur place)
 - [ ] Domaine perso `poudlard-home.ca` (CNAME Cloudflare, domaine dans Settings → Pages, `BASE_PATH: /`)
 - [ ] Audit Lighthouse PWA, tests sur les deux téléphones
 

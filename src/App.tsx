@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { DrawCount } from './engine'
 import { loadPreferences, savePreferences, type UserPreferences } from './state/persistence'
 import { useGame } from './state/useGame'
+import { AnimationLab } from './ui/AnimationLab'
 import { Board } from './ui/Board'
 import { Header } from './ui/Header'
 import { OptionsModal } from './ui/OptionsModal'
@@ -13,6 +14,10 @@ export default function App() {
   const [preferences, setPreferences] = useState<UserPreferences>(() => loadPreferences())
   const [isStatsOpen, setIsStatsOpen] = useState(false)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
+  const [isLabOpen, setIsLabOpen] = useState(
+    () => typeof window !== 'undefined' && window.location.search.includes('lab'),
+  )
+  const [mockWon, setMockWon] = useState(false)
 
   const {
     game,
@@ -186,7 +191,7 @@ export default function App() {
       )}
 
       {/* Bannière de victoire */}
-      {game.status === 'won' && (
+      {(game.status === 'won' || mockWon) && (
         <div
           style={{
             position: 'fixed',
@@ -222,7 +227,10 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               <button
                 type="button"
-                onClick={handleStartNewGame}
+                onClick={() => {
+                  setMockWon(false)
+                  handleStartNewGame()
+                }}
                 style={{
                   minHeight: '44px',
                   padding: '0.75rem 1.5rem',
@@ -278,6 +286,7 @@ export default function App() {
         onChangeDrawCount={handleChangeDrawCount}
         onToggleHaptic={handleToggleHaptic}
         onToggleAnimations={handleToggleAnimations}
+        onOpenLab={() => setIsLabOpen(true)}
       />
 
       {/* Modal des statistiques */}
@@ -287,6 +296,17 @@ export default function App() {
         onClose={() => setIsStatsOpen(false)}
         onReset={onResetStats}
       />
+
+      {/* Laboratoire d'animations */}
+      {isLabOpen && (
+        <AnimationLab
+          onClose={() => setIsLabOpen(false)}
+          onTriggerVictory={() => {
+            setIsLabOpen(false)
+            setMockWon(true)
+          }}
+        />
+      )}
 
       {/* Notification de mise à jour PWA */}
       <UpdatePrompt />

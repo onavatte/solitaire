@@ -15,6 +15,29 @@ interface CardViewProps {
   disableFlipAnimation?: boolean
 }
 
+const CardBackSvg: React.FC = () => (
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 100 140"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <defs>
+      <pattern id="cardBackPattern" width="10" height="10" patternUnits="userSpaceOnUse">
+        <path
+          d="M 0 5 L 5 0 L 10 5 L 5 10 Z"
+          fill="none"
+          stroke="rgba(255, 255, 255, 0.22)"
+          strokeWidth="0.8"
+        />
+      </pattern>
+    </defs>
+    <rect x="4" y="4" width="92" height="132" rx="4" fill="#152e59" stroke="#ffffff" strokeWidth="1" />
+    <rect x="7" y="7" width="86" height="126" rx="3" fill="url(#cardBackPattern)" />
+  </svg>
+)
+
 export const CardView: React.FC<CardViewProps> = ({
   card,
   isHighlighted,
@@ -42,99 +65,15 @@ export const CardView: React.FC<CardViewProps> = ({
       setJustFlipped(true)
       const timer = setTimeout(() => {
         setJustFlipped(false)
-      }, 250)
+      }, 600) // 600ms pour un retournement 3D fluide et lisible
       return () => clearTimeout(timer)
     }
     prevFaceUpRef.current = card.faceUp
   }, [card.faceUp, disableFlipAnimation])
 
-  const flipClass = justFlipped ? 'card-revealed' : undefined
-  const resolvedClassName = [className, flipClass].filter(Boolean).join(' ') || undefined
-
-  // Dos de carte classique avec motif géométrique SVG
-  if (!card.faceUp) {
-    return (
-      <div
-        role="img"
-        onClick={(e) => {
-          e.stopPropagation()
-          onClick?.()
-        }}
-        className={className}
-        style={{
-          position: 'relative',
-          width: '100%',
-          aspectRatio: 'var(--card-aspect-ratio)',
-          backgroundColor: '#1b3b6f',
-          borderRadius: 'var(--card-radius)',
-          boxShadow: 'var(--card-shadow)',
-          border: '2px solid #ffffff',
-          boxSizing: 'border-box',
-          overflow: 'hidden',
-          cursor: onClick ? 'pointer' : 'default',
-          ...style,
-        }}
-      >
-        <svg
-          width="100%"
-          height="100%"
-          viewBox="0 0 100 140"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <defs>
-            <pattern id="cardBackPattern" width="10" height="10" patternUnits="userSpaceOnUse">
-              <path
-                d="M 0 5 L 5 0 L 10 5 L 5 10 Z"
-                fill="none"
-                stroke="rgba(255, 255, 255, 0.22)"
-                strokeWidth="0.8"
-              />
-            </pattern>
-          </defs>
-          <rect x="4" y="4" width="92" height="132" rx="4" fill="#152e59" stroke="#ffffff" strokeWidth="1" />
-          <rect x="7" y="7" width="86" height="126" rx="3" fill="url(#cardBackPattern)" />
-        </svg>
-      </div>
-    )
-  }
-
-  // Face avant de carte classique standard
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={cardAccessibleName(card)}
-      onClick={(e) => {
-        e.stopPropagation()
-        onClick?.()
-      }}
-      onDoubleClick={(e) => {
-        e.stopPropagation()
-        e.preventDefault()
-      }}
-      className={resolvedClassName}
-      style={{
-        position: 'relative',
-        width: '100%',
-        aspectRatio: 'var(--card-aspect-ratio)',
-        backgroundColor: 'var(--card-bg)',
-        border: '1px solid var(--card-border)',
-        borderRadius: 'var(--card-radius)',
-        boxShadow: isHighlighted || isSelected ? 'var(--highlight-shadow)' : 'var(--card-shadow)',
-        boxSizing: 'border-box',
-        overflow: 'hidden',
-        color: textColor,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: 'clamp(2px, 0.8vw, 5px)',
-        cursor: 'pointer',
-        transform: isSelected ? 'translateY(-4px)' : undefined,
-        transition: 'transform 0.1s ease, box-shadow 0.15s ease',
-        ...style,
-      }}
-    >
+  // Contenu commun de la face avant
+  const renderFrontContent = () => (
+    <>
       {/* En-tête supérieur gauche : rang et enseigne côte à côte */}
       <div
         style={{
@@ -201,6 +140,144 @@ export const CardView: React.FC<CardViewProps> = ({
           <SuitIcon suit={card.suit} />
         </div>
       )}
+    </>
+  )
+
+  // Rendu avec animation 3D complète lors de la découverte (Dos -> Tranche -> Face)
+  if (justFlipped) {
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label={cardAccessibleName(card)}
+        onClick={(e) => {
+          e.stopPropagation()
+          onClick?.()
+        }}
+        className={className}
+        style={{
+          position: 'relative',
+          width: '100%',
+          aspectRatio: 'var(--card-aspect-ratio)',
+          boxSizing: 'border-box',
+          cursor: 'pointer',
+          perspective: '800px',
+          ...style,
+        }}
+      >
+        <div className="card-flip-3d">
+          {/* Face Dos (0°) */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              backgroundColor: '#1b3b6f',
+              borderRadius: 'var(--card-radius)',
+              boxShadow: 'var(--card-shadow)',
+              border: '2px solid #ffffff',
+              boxSizing: 'border-box',
+              overflow: 'hidden',
+            }}
+          >
+            <CardBackSvg />
+          </div>
+
+          {/* Face Avant (180°) */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+              backgroundColor: 'var(--card-bg)',
+              border: '1px solid var(--card-border)',
+              borderRadius: 'var(--card-radius)',
+              boxShadow: isHighlighted || isSelected ? 'var(--highlight-shadow)' : 'var(--card-shadow)',
+              boxSizing: 'border-box',
+              overflow: 'hidden',
+              color: textColor,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              padding: 'clamp(2px, 0.8vw, 5px)',
+            }}
+          >
+            {renderFrontContent()}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Dos de carte classique au repos avec motif géométrique SVG
+  if (!card.faceUp) {
+    return (
+      <div
+        role="img"
+        onClick={(e) => {
+          e.stopPropagation()
+          onClick?.()
+        }}
+        className={className}
+        style={{
+          position: 'relative',
+          width: '100%',
+          aspectRatio: 'var(--card-aspect-ratio)',
+          backgroundColor: '#1b3b6f',
+          borderRadius: 'var(--card-radius)',
+          boxShadow: 'var(--card-shadow)',
+          border: '2px solid #ffffff',
+          boxSizing: 'border-box',
+          overflow: 'hidden',
+          cursor: onClick ? 'pointer' : 'default',
+          ...style,
+        }}
+      >
+        <CardBackSvg />
+      </div>
+    )
+  }
+
+  // Face avant de carte classique standard au repos
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={cardAccessibleName(card)}
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick?.()
+      }}
+      onDoubleClick={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+      }}
+      className={className}
+      style={{
+        position: 'relative',
+        width: '100%',
+        aspectRatio: 'var(--card-aspect-ratio)',
+        backgroundColor: 'var(--card-bg)',
+        border: '1px solid var(--card-border)',
+        borderRadius: 'var(--card-radius)',
+        boxShadow: isHighlighted || isSelected ? 'var(--highlight-shadow)' : 'var(--card-shadow)',
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+        color: textColor,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: 'clamp(2px, 0.8vw, 5px)',
+        cursor: 'pointer',
+        transform: isSelected ? 'translateY(-4px)' : undefined,
+        transition: 'transform 0.1s ease, box-shadow 0.15s ease',
+        ...style,
+      }}
+    >
+      {renderFrontContent()}
     </div>
   )
 }
