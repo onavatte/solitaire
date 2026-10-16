@@ -44,6 +44,8 @@ export const Board: React.FC<BoardProps> = ({
   highlightTableau,
   selectedLocation,
 }) => {
+  const [manualDropMoves, setManualDropMoves] = React.useState<number | null>(null)
+
   const {
     dragged,
     handlePointerDown,
@@ -52,6 +54,7 @@ export const Board: React.FC<BoardProps> = ({
     handlePointerCancel,
   } = useDrag({
     onDrop: (from, to) => {
+      setManualDropMoves(state.moves + 1)
       onDropMove?.(from, to)
     },
     onTap: (loc) => {
@@ -73,7 +76,12 @@ export const Board: React.FC<BoardProps> = ({
     canDragCard,
   })
 
-  const boardRef = useFlipAnimation(state.moves, { disabled: Boolean(dragged) })
+  const isManualDrop = manualDropMoves === state.moves
+
+  const boardRef = useFlipAnimation(state.moves, {
+    disabled: Boolean(dragged),
+    isManualDrop,
+  })
 
   // Vérifie si une carte fait partie de la séquence en cours de glissement
   const isCardDragged = (loc: Location): boolean => {

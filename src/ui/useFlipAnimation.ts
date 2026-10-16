@@ -3,6 +3,7 @@ import { useLayoutEffect, useRef } from 'react'
 interface FlipOptions {
   readonly disabled?: boolean
   readonly duration?: number
+  readonly isManualDrop?: boolean
 }
 
 /**
@@ -40,6 +41,12 @@ export function useFlipAnimation(
 
     // Mémoriser le nombre de coups
     prevMovesRef.current = moves
+
+    // Si c'est un drop manuel (la carte a déjà été glissée avec le doigt), on ne rejoue pas l'animation
+    if (options.isManualDrop) {
+      prevRectsRef.current = currentRects
+      return
+    }
 
     // Si c'est une nouvelle donne ou le chargement initial, on ne déclenche pas de transition FLIP
     if (isNewGameOrInitial) {
@@ -104,7 +111,7 @@ export function useFlipAnimation(
 
     // Enregistrer les positions pour le prochain mouvement
     prevRectsRef.current = currentRects
-  }, [moves, options.disabled, options.duration])
+  }, [moves, options.disabled, options.duration, options.isManualDrop])
 
   return containerRef
 }
