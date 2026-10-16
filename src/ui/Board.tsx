@@ -292,7 +292,7 @@ export const Board: React.FC<BoardProps> = ({
         <div style={{ position: 'relative' }}>
           <Slot
             label={state.stock.length > 0 ? undefined : '↺'}
-            onClick={state.stock.length === 0 ? onStockClick : undefined}
+            onClick={onStockClick}
             highlight={highlightStock}
           >
             {state.stock.length > 0 && (() => {
@@ -330,11 +330,12 @@ export const Board: React.FC<BoardProps> = ({
                           inset: 0,
                           zIndex: idx + 2,
                           touchAction: isTop ? 'manipulation' : 'none',
+                          pointerEvents: isTop ? 'auto' : 'none',
                           cursor: isTop ? 'pointer' : 'default',
                         }}
                         onClick={isTop ? onStockClick : undefined}
                       >
-                        <CardView card={card} />
+                        <CardView card={card} onClick={isTop ? onStockClick : undefined} />
                       </div>
                     )
                   })}
