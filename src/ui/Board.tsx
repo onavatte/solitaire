@@ -25,6 +25,7 @@ interface BoardProps {
     | { readonly zone: 'waste' }
     | { readonly zone: 'tableau'; readonly column: number; readonly cardIndex?: number }
     | null
+  disableAnimations?: boolean
 }
 
 export const Board: React.FC<BoardProps> = ({
@@ -43,6 +44,7 @@ export const Board: React.FC<BoardProps> = ({
   highlightFoundationIndex,
   highlightTableau,
   selectedLocation,
+  disableAnimations,
 }) => {
   const [manualDropMoves, setManualDropMoves] = React.useState<number | null>(null)
 
@@ -79,7 +81,7 @@ export const Board: React.FC<BoardProps> = ({
   const isManualDrop = manualDropMoves === state.moves
 
   const boardRef = useFlipAnimation(state.moves, {
-    disabled: Boolean(dragged),
+    disabled: Boolean(dragged) || disableAnimations,
     isManualDrop,
   })
 
@@ -108,7 +110,7 @@ export const Board: React.FC<BoardProps> = ({
         display: 'flex',
         flexDirection: 'column',
         gap: 'clamp(8px, 1.8vh, 16px)',
-        paddingTop: 'calc(0.5rem + env(safe-area-inset-top, 0px))',
+        paddingTop: '0.25rem',
         paddingLeft: 'var(--board-gap)',
         paddingRight: 'var(--board-gap)',
         paddingBottom: '0.5rem',

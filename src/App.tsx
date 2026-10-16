@@ -1,13 +1,19 @@
 import { useState } from 'react'
-import { savePreferences } from './state/persistence'
+import type { DrawCount } from './engine'
+import { loadPreferences, savePreferences, type UserPreferences } from './state/persistence'
 import { useGame } from './state/useGame'
 import { Board } from './ui/Board'
+import { Header } from './ui/Header'
+import { OptionsModal } from './ui/OptionsModal'
 import { StatsModal } from './ui/StatsModal'
 import { Toolbar } from './ui/Toolbar'
 import { UpdatePrompt } from './ui/UpdatePrompt'
 
 export default function App() {
+  const [preferences, setPreferences] = useState<UserPreferences>(() => loadPreferences())
   const [isStatsOpen, setIsStatsOpen] = useState(false)
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false)
+
   const {
     game,
     stats,
@@ -27,7 +33,17 @@ export default function App() {
     onResetStats,
   } = useGame()
 
-  const drawCount = game.drawCount
+  const drawCount = preferences.drawCount
+
+  const triggerHaptic = (duration = 12) => {
+    if (preferences.hapticFeedback && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate(duration)
+      } catch {
+        // Ignoré si non supporté
+      }
+    }
+  }
 
   // Calcul des surbrillances pour l'indice visuel
   const highlightStock = activeHint?.type === 'draw'
@@ -46,13 +62,51 @@ export default function App() {
       : null
 
   const handleStartNewGame = () => {
+    triggerHaptic(15)
     onNewGame({ drawCount })
   }
 
-  const handleToggleDrawCount = () => {
-    const nextDrawCount: 1 | 3 = drawCount === 1 ? 3 : 1
-    savePreferences({ drawCount: nextDrawCount })
-    onNewGame({ drawCount: nextDrawCount })
+  const handleChangeDrawCount = (nextCount: DrawCount) => {
+    if (nextCount === preferences.drawCount) return
+    triggerHaptic(15)
+    savePreferences({ drawCount: nextCount })
+    setPreferences((prev) => ({ ...prev, drawCount: nextCount }))
+    onNewGame({ drawCount: nextCount })
+  }
+
+  const handleToggleHaptic = () => {
+    const next = !preferences.hapticFeedback
+    if (next && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate(15)
+      } catch {
+        // Ignoré
+      }
+    }
+    savePreferences({ hapticFeedback: next })
+    setPreferences((prev) => ({ ...prev, hapticFeedback: next }))
+  }
+
+  const handleToggleAnimations = () => {
+    const next = !preferences.disableAnimations
+    triggerHaptic(12)
+    savePreferences({ disableAnimations: next })
+    setPreferences((prev) => ({ ...prev, disableAnimations: next }))
+  }
+
+  const handleStockClickWithHaptic = () => {
+    triggerHaptic(10)
+    onStockClick()
+  }
+
+  const handleMoveCardsWithHaptic: typeof onMoveCards = (from, to) => {
+    triggerHaptic(14)
+    onMoveCards(from, to)
+  }
+
+  const handleQuickMoveWithHaptic: typeof onQuickMoveToFoundation = (from) => {
+    triggerHaptic(14)
+    onQuickMoveToFoundation(from)
   }
 
   return (
@@ -67,25 +121,29 @@ export default function App() {
         color: 'var(--felt-text)',
       }}
     >
+      {/* En-tête supérieur avec temps et coups */}
+      <Header moves={game.moves} elapsedMs={game.elapsedMs} />
+
       {/* Plateau de jeu en 7 colonnes */}
       <Board
         state={game}
-        onStockClick={onStockClick}
+        onStockClick={handleStockClickWithHaptic}
         onWasteClick={() => onSelectOrMove({ zone: 'waste' })}
-        onWasteDoubleClick={() => onQuickMoveToFoundation({ zone: 'waste' })}
+        onWasteDoubleClick={() => handleQuickMoveWithHaptic({ zone: 'waste' })}
         onFoundationClick={(fIndex) => onSelectOrMove({ zone: 'foundation', foundationIndex: fIndex })}
         onTableauCardClick={(col, cardIndex) => {
           onSelectOrMove({ zone: 'tableau', column: col, cardIndex })
         }}
         onTableauCardDoubleClick={(col, cardIndex) => {
-          onQuickMoveToFoundation({ zone: 'tableau', column: col, cardIndex })
+          handleQuickMoveWithHaptic({ zone: 'tableau', column: col, cardIndex })
         }}
         onTableauEmptyClick={(col) => onSelectOrMove({ zone: 'tableau', column: col })}
-        onDropMove={onMoveCards}
+        onDropMove={handleMoveCardsWithHaptic}
         highlightStock={highlightStock}
         highlightWaste={highlightWaste}
         highlightFoundationIndex={highlightFoundationIndex}
         highlightTableau={highlightTableau}
+        disableAnimations={preferences.disableAnimations}
         selectedLocation={
           selectedLocation?.zone === 'waste' || selectedLocation?.zone === 'tableau'
             ? selectedLocation
@@ -204,15 +262,22 @@ export default function App() {
 
       {/* Barre d'outils mobile */}
       <Toolbar
-        moves={game.moves}
-        elapsedMs={game.elapsedMs}
-        drawCount={drawCount}
         canUndo={canUndo}
         onUndo={onUndo}
         onHint={onHint}
         onNewGame={handleStartNewGame}
-        onToggleDrawCount={handleToggleDrawCount}
         onOpenStats={() => setIsStatsOpen(true)}
+        onOpenOptions={() => setIsOptionsOpen(true)}
+      />
+
+      {/* Modal des options */}
+      <OptionsModal
+        preferences={preferences}
+        isOpen={isOptionsOpen}
+        onClose={() => setIsOptionsOpen(false)}
+        onChangeDrawCount={handleChangeDrawCount}
+        onToggleHaptic={handleToggleHaptic}
+        onToggleAnimations={handleToggleAnimations}
       />
 
       {/* Modal des statistiques */}

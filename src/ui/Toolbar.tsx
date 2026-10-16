@@ -1,161 +1,143 @@
 import React from 'react'
 
 interface ToolbarProps {
-  moves: number
-  elapsedMs: number
-  drawCount: 1 | 3
   canUndo: boolean
   onUndo: () => void
   onHint: () => void
   onNewGame: () => void
-  onToggleDrawCount: () => void
   onOpenStats: () => void
+  onOpenOptions: () => void
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
-  moves,
-  elapsedMs,
-  drawCount,
   canUndo,
   onUndo,
   onHint,
   onNewGame,
-  onToggleDrawCount,
   onOpenStats,
+  onOpenOptions,
 }) => {
-  const totalSeconds = Math.floor(elapsedMs / 1000)
-  const minutes = Math.floor(totalSeconds / 60)
-  const seconds = totalSeconds % 60
-  const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  const itemStyle = (enabled = true): React.CSSProperties => ({
+    flex: 1,
+    minHeight: '48px',
+    minWidth: '44px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '2px',
+    padding: '0.3rem 0.2rem',
+    backgroundColor: enabled ? 'var(--btn-bg)' : 'transparent',
+    color: enabled ? 'var(--felt-text)' : 'var(--btn-disabled)',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: enabled ? 'pointer' : 'default',
+    touchAction: 'manipulation',
+    userSelect: 'none',
+    WebkitTapHighlightColor: 'transparent',
+  })
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: '0.68rem',
+    fontWeight: 600,
+    letterSpacing: '0.01em',
+    lineHeight: 1,
+  }
+
+  const iconStyle: React.CSSProperties = {
+    fontSize: '1.25rem',
+    lineHeight: 1,
+  }
 
   return (
     <footer
       style={{
-        display: 'flex',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(5, 1fr)',
+        gap: '0.3rem',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0.5rem 0.8rem calc(0.5rem + env(safe-area-inset-bottom, 0px))',
+        padding: '0.35rem 0.6rem calc(0.45rem + env(safe-area-inset-bottom, 0px))',
         backgroundColor: 'var(--toolbar-bg)',
         borderTop: '1px solid var(--toolbar-border)',
         backdropFilter: 'blur(8px)',
         zIndex: 50,
+        flexShrink: 0,
+        boxSizing: 'border-box',
+        maxWidth: '720px',
+        width: '100%',
+        margin: '0 auto',
       }}
     >
-      {/* Statistiques et mode de pioche */}
-      <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', fontSize: '0.85rem', fontWeight: 500 }}>
-        <div>
-          <span style={{ color: 'var(--felt-text-muted)', marginRight: '0.2rem' }}>Temps</span>
-          <span>{formattedTime}</span>
-        </div>
-        <div>
-          <span style={{ color: 'var(--felt-text-muted)', marginRight: '0.2rem' }}>Coups</span>
-          <span>{moves}</span>
-        </div>
-        <button
-          type="button"
-          onClick={onToggleDrawCount}
-          title="Changer le mode de pioche (1 ou 3 cartes)"
-          style={{
-            minHeight: '36px',
-            padding: '0.2rem 0.5rem',
-            backgroundColor: 'var(--btn-bg)',
-            color: 'var(--felt-text)',
-            border: '1px solid var(--toolbar-border)',
-            borderRadius: '4px',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-        >
-          {drawCount === 1 ? '1 carte' : '3 cartes'}
-        </button>
-        <button
-          type="button"
-          onClick={onOpenStats}
-          title="Consulter les statistiques"
-          aria-label="Statistiques"
-          style={{
-            minHeight: '36px',
-            minWidth: '36px',
-            padding: '0.2rem 0.4rem',
-            backgroundColor: 'var(--btn-bg)',
-            color: 'var(--felt-text)',
-            border: '1px solid var(--toolbar-border)',
-            borderRadius: '4px',
-            fontSize: '0.85rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+      {/* 1. Options (à gauche) */}
+      <button
+        type="button"
+        onClick={onOpenOptions}
+        title="Ouvrir les options"
+        aria-label="Options"
+        style={itemStyle(true)}
+      >
+        <span style={iconStyle} aria-hidden="true">
+          ⚙️
+        </span>
+        <span style={labelStyle}>Options</span>
+      </button>
+
+      {/* 2. Statistiques */}
+      <button
+        type="button"
+        onClick={onOpenStats}
+        title="Consulter les statistiques"
+        aria-label="Statistiques"
+        style={itemStyle(true)}
+      >
+        <span style={iconStyle} aria-hidden="true">
           📊
-        </button>
-      </div>
+        </span>
+        <span style={labelStyle}>Stats</span>
+      </button>
 
-      {/* Boutons d'action tactiles (>= 44px) */}
-      <div style={{ display: 'flex', gap: '0.4rem' }}>
-        <button
-          type="button"
-          onClick={onUndo}
-          disabled={!canUndo}
-          style={{
-            minHeight: '44px',
-            minWidth: '44px',
-            padding: '0.5rem 0.7rem',
-            backgroundColor: canUndo ? 'var(--btn-bg)' : 'var(--btn-disabled)',
-            color: canUndo ? 'var(--felt-text)' : 'var(--felt-text-muted)',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '0.85rem',
-            fontWeight: 600,
-            cursor: canUndo ? 'pointer' : 'default',
-            touchAction: 'manipulation',
-          }}
-        >
-          Annuler
-        </button>
+      {/* 3. Nouvelle partie (au centre) */}
+      <button
+        type="button"
+        onClick={onNewGame}
+        title="Démarrer une nouvelle partie"
+        aria-label="Nouvelle partie"
+        style={itemStyle(true)}
+      >
+        <span style={iconStyle} aria-hidden="true">
+          🃏
+        </span>
+        <span style={labelStyle}>Nouvelle</span>
+      </button>
 
-        <button
-          type="button"
-          onClick={onHint}
-          style={{
-            minHeight: '44px',
-            minWidth: '44px',
-            padding: '0.5rem 0.7rem',
-            backgroundColor: 'var(--btn-bg)',
-            color: 'var(--felt-text)',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '0.85rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            touchAction: 'manipulation',
-          }}
-        >
-          Indice
-        </button>
+      {/* 4. Indice */}
+      <button
+        type="button"
+        onClick={onHint}
+        title="Obtenir un indice"
+        aria-label="Indice"
+        style={itemStyle(true)}
+      >
+        <span style={iconStyle} aria-hidden="true">
+          💡
+        </span>
+        <span style={labelStyle}>Indice</span>
+      </button>
 
-        <button
-          type="button"
-          onClick={onNewGame}
-          style={{
-            minHeight: '44px',
-            minWidth: '44px',
-            padding: '0.5rem 0.7rem',
-            backgroundColor: 'var(--btn-bg)',
-            color: 'var(--felt-text)',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '0.85rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            touchAction: 'manipulation',
-          }}
-        >
-          Nouvelle
-        </button>
-      </div>
+      {/* 5. Annuler (à droite, sous le pouce) */}
+      <button
+        type="button"
+        onClick={onUndo}
+        disabled={!canUndo}
+        title="Annuler le dernier coup"
+        aria-label="Annuler"
+        style={itemStyle(canUndo)}
+      >
+        <span style={iconStyle} aria-hidden="true">
+          ↩
+        </span>
+        <span style={labelStyle}>Annuler</span>
+      </button>
     </footer>
   )
 }

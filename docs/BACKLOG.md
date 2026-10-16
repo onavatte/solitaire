@@ -36,12 +36,19 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Couleur de barre de statut mobile (`theme_color` PWA et `meta theme-color`) assortie au vert feutrine
 - [x] Graphismes & figures : disposition mobile (rang + enseigne horizontaux), figures SVG (Valet, Dame, Roi) et grand symbole central
 - [x] Sauvegarde/reprise de la partie (`localStorage`), stats
-- [x] Animations fluides (déplacement FLIP natif, distribution, snap-back, retournement)
-- [ ] Mode gaucher, haptique, respect de `prefers-reduced-motion`
+- [x] Animations de base FLIP GPU (déplacement, pioche 1/3 cartes coordonnée, glisser-déposer sans fantôme)
+- [ ] Header supérieur : déplacer le chrono et le compteur de coups en haut (libérer l'espace en bas)
+- [ ] Footer (barre d'actions) : boutons verticaux (icône + libellé compact) de droite à gauche (Annuler ↩, Indice 💡, Nouvelle 🃏, Stats 📊, Options ⚙️)
+- [ ] Modal Options ⚙️ : choix pioche (1 ou 3 cartes), retour haptique (on/off), désactivation des transitions
+- [ ] Animation de distribution pour les nouvelles parties
+- [ ] Animation de victoire festive (feux d'artifice / confettis sur le canvas ou SVG)
+- [ ] Ajustement du layout des figures (Valet, Dame, Roi)
+- [ ] Ajustement de l'animation de flip de carte (retournement sur place)
 - [ ] Domaine perso `poudlard-home.ca` (CNAME Cloudflare, domaine dans Settings → Pages, `BASE_PATH: /`)
 - [ ] Audit Lighthouse PWA, tests sur les deux téléphones
 
 ## Idées pour plus tard (v2)
+- Mode gaucher
 - Habillage comics (typo BD, halftone, onomatopées, explosions)
 - Autres thèmes (sombre, bois, moderne)
 - Solveur pour garantir des donnes gagnables

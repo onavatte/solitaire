@@ -16,6 +16,8 @@ export interface GameStats {
 
 export interface UserPreferences {
   readonly drawCount: DrawCount
+  readonly hapticFeedback: boolean
+  readonly disableAnimations: boolean
 }
 
 export interface SavedGame {
@@ -48,6 +50,8 @@ export function getDefaultStats(): GameStats {
 export function getDefaultPreferences(): UserPreferences {
   return {
     drawCount: 1,
+    hapticFeedback: true,
+    disableAnimations: false,
   }
 }
 
@@ -144,27 +148,45 @@ export function clearSavedGame(): void {
 
 export function loadPreferences(): UserPreferences {
   const storage = getStorage()
-  if (!storage) return getDefaultPreferences()
+  const defaults = getDefaultPreferences()
+  if (!storage) return defaults
 
   try {
     const raw = storage.getItem(STORAGE_KEYS.PREFERENCES)
-    if (!raw) return getDefaultPreferences()
+    if (!raw) return defaults
     const parsed = JSON.parse(raw) as unknown
-    if (isObject(parsed) && (parsed['drawCount'] === 1 || parsed['drawCount'] === 3)) {
-      return { drawCount: parsed['drawCount'] }
-    }
-    return getDefaultPreferences()
+    if (!isObject(parsed)) return defaults
+
+    const drawCount =
+      parsed['drawCount'] === 1 || parsed['drawCount'] === 3
+        ? parsed['drawCount']
+        : defaults.drawCount
+    const hapticFeedback =
+      typeof parsed['hapticFeedback'] === 'boolean'
+        ? parsed['hapticFeedback']
+        : defaults.hapticFeedback
+    const disableAnimations =
+      typeof parsed['disableAnimations'] === 'boolean'
+        ? parsed['disableAnimations']
+        : defaults.disableAnimations
+
+    return { drawCount, hapticFeedback, disableAnimations }
   } catch {
-    return getDefaultPreferences()
+    return defaults
   }
 }
 
-export function savePreferences(prefs: UserPreferences): void {
+export function savePreferences(prefs: Partial<UserPreferences>): void {
   const storage = getStorage()
   if (!storage) return
 
   try {
-    storage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(prefs))
+    const current = loadPreferences()
+    const updated: UserPreferences = {
+      ...current,
+      ...prefs,
+    }
+    storage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(updated))
   } catch {
     // Échec silencieux
   }
