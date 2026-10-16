@@ -64,7 +64,7 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
           }}
         >
           <h2 id="options-title" style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
-            Options ⚙️
+            Options
           </h2>
           <button
             type="button"
@@ -165,7 +165,7 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
             }}
           >
             <div>
-              <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Retour haptique 📳</div>
+              <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Retour haptique</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--felt-text-muted)', marginTop: '0.2rem' }}>
                 Vibrations subtiles lors des coups (mobile)
               </div>
@@ -206,7 +206,7 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
             }}
           >
             <div>
-              <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Transitions fluides ✨</div>
+              <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Transitions fluides</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--felt-text-muted)', marginTop: '0.2rem' }}>
                 Animations GPU de déplacement des cartes
               </div>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { BulbIcon, CardsIcon, ChartIcon, GearIcon, UndoIcon } from './icons'
 
 interface ToolbarProps {
   canUndo: boolean
@@ -25,7 +26,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '2px',
+    gap: '3px',
     padding: '0.3rem 0.2rem',
     backgroundColor: enabled ? 'var(--btn-bg)' : 'transparent',
     color: enabled ? 'var(--felt-text)' : 'var(--btn-disabled)',
@@ -41,11 +42,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     fontSize: '0.68rem',
     fontWeight: 600,
     letterSpacing: '0.01em',
-    lineHeight: 1,
-  }
-
-  const iconStyle: React.CSSProperties = {
-    fontSize: '1.25rem',
     lineHeight: 1,
   }
 
@@ -76,9 +72,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         aria-label="Options"
         style={itemStyle(true)}
       >
-        <span style={iconStyle} aria-hidden="true">
-          ⚙️
-        </span>
+        <GearIcon size={19} />
         <span style={labelStyle}>Options</span>
       </button>
 
@@ -90,9 +84,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         aria-label="Statistiques"
         style={itemStyle(true)}
       >
-        <span style={iconStyle} aria-hidden="true">
-          📊
-        </span>
+        <ChartIcon size={19} />
         <span style={labelStyle}>Stats</span>
       </button>
 
@@ -104,9 +96,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         aria-label="Nouvelle partie"
         style={itemStyle(true)}
       >
-        <span style={iconStyle} aria-hidden="true">
-          🃏
-        </span>
+        <CardsIcon size={19} />
         <span style={labelStyle}>Nouvelle</span>
       </button>
 
@@ -118,9 +108,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         aria-label="Indice"
         style={itemStyle(true)}
       >
-        <span style={iconStyle} aria-hidden="true">
-          💡
-        </span>
+        <BulbIcon size={19} />
         <span style={labelStyle}>Indice</span>
       </button>
 
@@ -133,9 +121,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         aria-label="Annuler"
         style={itemStyle(canUndo)}
       >
-        <span style={iconStyle} aria-hidden="true">
-          ↩
-        </span>
+        <UndoIcon size={19} />
         <span style={labelStyle}>Annuler</span>
       </button>
     </footer>

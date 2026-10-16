@@ -84,7 +84,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
           }}
         >
           <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>
-            Statistiques 📊
+            Statistiques
           </h2>
           <button
             type="button"

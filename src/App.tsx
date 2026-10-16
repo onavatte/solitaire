@@ -180,7 +180,7 @@ export default function App() {
               minHeight: '44px',
             }}
           >
-            {isAutocompleting ? 'Résolution en cours... ⚡' : 'Terminer automatiquement ⚡'}
+            {isAutocompleting ? 'Résolution en cours...' : 'Terminer automatiquement'}
           </button>
         </div>
       )}
@@ -212,7 +212,7 @@ export default function App() {
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
             }}
           >
-            <h2 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0' }}>Victoire ! 🏆</h2>
+            <h2 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0' }}>Victoire !</h2>
             <p style={{ margin: '0 0 1rem 0', color: 'var(--felt-text-muted)', lineHeight: 1.5 }}>
               Donne résolue en <strong>{game.moves} coups</strong>
               <br />
@@ -253,7 +253,7 @@ export default function App() {
                   cursor: 'pointer',
                 }}
               >
-                Voir mes statistiques 📊
+                Voir mes statistiques
               </button>
             </div>
           </div>

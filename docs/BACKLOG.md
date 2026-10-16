@@ -37,9 +37,9 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Graphismes & figures : disposition mobile (rang + enseigne horizontaux), figures SVG (Valet, Dame, Roi) et grand symbole central
 - [x] Sauvegarde/reprise de la partie (`localStorage`), stats
 - [x] Animations de base FLIP GPU (déplacement, pioche 1/3 cartes coordonnée, glisser-déposer sans fantôme)
-- [ ] Header supérieur : déplacer le chrono et le compteur de coups en haut (libérer l'espace en bas)
-- [ ] Footer (barre d'actions) : boutons verticaux (icône + libellé compact) de droite à gauche (Annuler ↩, Indice 💡, Nouvelle 🃏, Stats 📊, Options ⚙️)
-- [ ] Modal Options ⚙️ : choix pioche (1 ou 3 cartes), retour haptique (on/off), désactivation des transitions
+- [x] Header supérieur : déplacer le chrono et le compteur de coups en haut (libérer l'espace en bas)
+- [x] Footer (barre d'actions) : boutons verticaux (icône + libellé compact) de droite à gauche (Annuler ↩, Indice 💡, Nouvelle 🃏, Stats 📊, Options ⚙️)
+- [x] Modal Options ⚙️ : choix pioche (1 ou 3 cartes), retour haptique (on/off), désactivation des transitions
 - [ ] Animation de distribution pour les nouvelles parties
 - [ ] Animation de victoire festive (feux d'artifice / confettis sur le canvas ou SVG)
 - [ ] Ajustement du layout des figures (Valet, Dame, Roi)
