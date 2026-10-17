@@ -8,6 +8,9 @@ interface SuitPulseProps {
 }
 
 export const SuitPulse: React.FC<SuitPulseProps> = ({ suit, onComplete }) => {
+  const suitColor =
+    suit === 'hearts' || suit === 'diamonds' ? 'var(--red-suit, #e63946)' : 'var(--black-suit, #1d3557)'
+
   return (
     <div
       className="suit-pulse-fade"
@@ -20,7 +23,7 @@ export const SuitPulse: React.FC<SuitPulseProps> = ({ suit, onComplete }) => {
         justifyContent: 'center',
         zIndex: 600,
         pointerEvents: 'none',
-        filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25))',
+        color: suitColor,
       }}
     >
       <SuitIcon suit={suit} size="70%" />
