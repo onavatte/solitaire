@@ -93,28 +93,18 @@ body {
 /* Onde de symbole d'enseigne lors de l'arrivée en fondation */
 @keyframes suitPulseFade {
   0% {
-    transform: scale(0.7);
-    opacity: 0.6;
-    filter: drop-shadow(0 0 2px currentColor) blur(0px);
-  }
-  35% {
-    opacity: 0.45;
-    filter: drop-shadow(0 0 8px currentColor) blur(1.5px);
-  }
-  70% {
-    opacity: 0.2;
-    filter: drop-shadow(0 0 16px currentColor) blur(5px);
+    transform: scale(0.6);
+    opacity: 0.7;
   }
   100% {
-    transform: scale(4.2);
+    transform: scale(3.8);
     opacity: 0;
-    filter: drop-shadow(0 0 24px currentColor) blur(10px);
   }
 }
 
 .suit-pulse-fade {
-  animation: suitPulseFade 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity, filter;
+  animation: suitPulseFade 1.7s cubic-bezier(0.08, 0.82, 0.17, 1) forwards;
+  will-change: transform, opacity;
   pointer-events: none;
 }
 
