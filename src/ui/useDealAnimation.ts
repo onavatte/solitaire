@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 
 interface DealAnimationOptions {
   readonly disabled?: boolean
@@ -39,9 +39,15 @@ export function useDealAnimation(
   const { disabled, duration = 220, cardInterval = 26, onComplete } = options
   const isDealingRef = useRef(false)
   const cleanupFnsRef = useRef<(() => void)[]>([])
+  const lastAnimatedDealIdRef = useRef(0)
+  const onCompleteRef = useRef(onComplete)
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  })
 
   useLayoutEffect(() => {
-    if (dealId === 0) return
+    if (dealId === 0 || dealId === lastAnimatedDealIdRef.current) return
     if (typeof window === 'undefined') return
     if (disabled) return
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
@@ -59,6 +65,7 @@ export function useDealAnimation(
     const cardElements = container.querySelectorAll<HTMLElement>('[data-tableau-card="true"]')
     if (cardElements.length === 0) return
 
+    lastAnimatedDealIdRef.current = dealId
     isDealingRef.current = true
 
     const interval = cardInterval
@@ -114,7 +121,7 @@ export function useDealAnimation(
     const totalDuration = 28 * interval + duration + 60
     const endTimer = setTimeout(() => {
       isDealingRef.current = false
-      onComplete?.()
+      onCompleteRef.current?.()
     }, totalDuration)
     cleanups.push(() => clearTimeout(endTimer))
 
@@ -126,7 +133,7 @@ export function useDealAnimation(
         cleanupFnsRef.current.forEach((fn) => fn())
         cleanupFnsRef.current = []
         isDealingRef.current = false
-        onComplete?.()
+        onCompleteRef.current?.()
       }
     }
 
@@ -138,6 +145,6 @@ export function useDealAnimation(
       cleanupFnsRef.current = []
       isDealingRef.current = false
     }
-  }, [cardInterval, containerRef, dealId, disabled, duration, onComplete])
+  }, [cardInterval, containerRef, dealId, disabled, duration])
 }
 

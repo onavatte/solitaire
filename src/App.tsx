@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { findAutoMove, type DrawCount, type Location } from './engine'
 import {
   loadPreferences,
@@ -36,6 +36,10 @@ export default function App() {
   const [dealId, setDealId] = useState(0)
   const [isDealing, setIsDealing] = useState(false)
   const [victoryCelebrationMode, setVictoryCelebrationMode] = useState<VictoryMode>('fireworks-comics')
+
+  const handleDealComplete = useCallback(() => {
+    setIsDealing(false)
+  }, [])
 
   const {
     game,
@@ -221,7 +225,7 @@ export default function App() {
         highlightFoundationIndex={highlightFoundationIndex}
         highlightTableau={highlightTableau}
         disableAnimations={preferences.disableAnimations}
-        onDealComplete={() => setIsDealing(false)}
+        onDealComplete={handleDealComplete}
         selectedLocation={
           selectedLocation?.zone === 'waste' || selectedLocation?.zone === 'tableau'
             ? selectedLocation
