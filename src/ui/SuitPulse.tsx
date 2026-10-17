@@ -18,8 +18,9 @@ export const SuitPulse: React.FC<SuitPulseProps> = ({ suit, onComplete }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 15,
+        zIndex: 600,
         pointerEvents: 'none',
+        filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25))',
       }}
     >
       <SuitIcon suit={suit} size="70%" />

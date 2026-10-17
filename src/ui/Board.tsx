@@ -96,10 +96,10 @@ export const Board: React.FC<BoardProps> = ({
     })
 
     if (newPulses.length > 0) {
-      const raf = requestAnimationFrame(() => {
+      const timer = setTimeout(() => {
         setActivePulses((current) => [...current, ...newPulses])
-      })
-      return () => cancelAnimationFrame(raf)
+      }, 100)
+      return () => clearTimeout(timer)
     }
   }, [state.foundations, state.moves, disableAnimations])
 

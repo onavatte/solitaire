@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import type { Card } from '../engine'
+import type { Card, Suit } from '../engine'
 import { CardView } from './CardView'
+import { SuitPulse } from './SuitPulse'
 import { VictoryCelebration, type VictoryMode } from './VictoryCelebration'
 
 interface AnimationLabProps {
@@ -26,6 +27,7 @@ export const AnimationLab: React.FC<AnimationLabProps> = ({ onClose, onTriggerVi
   const [variant, setVariant] = useState<FlipVariant>('full3d')
   const [manualProgress, setManualProgress] = useState<number | null>(null) // null = mode automatique
   const [activeCelebration, setActiveCelebration] = useState<VictoryMode | null>(null)
+  const [activePulse, setActivePulse] = useState<{ id: number; suit: Suit } | null>(null)
 
 
   const activeCard = SAMPLE_CARDS[selectedCardIndex] ?? SAMPLE_CARDS[0]!
@@ -163,6 +165,15 @@ export const AnimationLab: React.FC<AnimationLabProps> = ({ onClose, onTriggerVi
               card={cardWithState}
               variant={variant}
               durationMs={durationMs}
+            />
+          )}
+
+          {/* Onde de symbole d'enseigne active en prévisualisation */}
+          {activePulse && (
+            <SuitPulse
+              key={activePulse.id}
+              suit={activePulse.suit}
+              onComplete={() => setActivePulse(null)}
             />
           )}
         </div>
@@ -547,6 +558,91 @@ export const AnimationLab: React.FC<AnimationLabProps> = ({ onClose, onTriggerVi
               }}
             >
               🎲 Aléatoire
+            </button>
+          </div>
+        </div>
+
+        {/* Section Onde d'enseigne en fondation (Suit Pulse) */}
+        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '0.8rem' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '0.4rem' }}>
+            Tester l'onde d'enseigne (fondation) :
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setActivePulse(null)
+                setTimeout(() => setActivePulse({ id: Date.now(), suit: 'hearts' }), 30)
+              }}
+              style={{
+                minHeight: '38px',
+                backgroundColor: 'rgba(230, 57, 70, 0.25)',
+                color: '#ff6b6b',
+                border: '1px solid rgba(230, 57, 70, 0.4)',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+              }}
+            >
+              ♥ Cœur
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActivePulse(null)
+                setTimeout(() => setActivePulse({ id: Date.now(), suit: 'diamonds' }), 30)
+              }}
+              style={{
+                minHeight: '38px',
+                backgroundColor: 'rgba(230, 57, 70, 0.25)',
+                color: '#ff6b6b',
+                border: '1px solid rgba(230, 57, 70, 0.4)',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+              }}
+            >
+              ♦ Carreau
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActivePulse(null)
+                setTimeout(() => setActivePulse({ id: Date.now(), suit: 'spades' }), 30)
+              }}
+              style={{
+                minHeight: '38px',
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                color: '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+              }}
+            >
+              ♠ Pique
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActivePulse(null)
+                setTimeout(() => setActivePulse({ id: Date.now(), suit: 'clubs' }), 30)
+              }}
+              style={{
+                minHeight: '38px',
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                color: '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+              }}
+            >
+              ♣ Trèfle
             </button>
           </div>
         </div>
