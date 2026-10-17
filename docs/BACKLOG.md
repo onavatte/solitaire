@@ -41,11 +41,17 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Footer (barre d'actions) : boutons verticaux (icône + libellé compact) de droite à gauche (Annuler ↩, Indice 💡, Nouvelle 🃏, Stats 📊, Options ⚙️)
 - [x] Modal Options ⚙️ : choix pioche (1 ou 3 cartes), retour haptique (on/off), désactivation des transitions
 - [ ] Animation de distribution pour les nouvelles parties
-- [ ] Animation de victoire festive (feux d'artifice / confettis sur le canvas ou SVG)
+- [x] Animation de victoire festive (feux d'artifice classiques, comics pop et confettis aléatoires)
 - [x] Ajustement du layout des figures (Valet, Dame, Roi)
 - [x] Ajustement de l'animation de flip de carte (retournement sur place)
 - [ ] Domaine perso `poudlard-home.ca` (CNAME Cloudflare, domaine dans Settings → Pages, `BASE_PATH: /`)
 - [ ] Audit Lighthouse PWA, tests sur les deux téléphones
+
+## Jalon 4 — Gameplay, Ergonomie & Finitions interactives
+- [ ] Animations d'enseignes (particules de cœurs, carreaux, piques, trèfles) quand une carte arrive dans sa fondation
+- [ ] *Smart auto-move* sur simple clic (envoi direct sur le meilleur emplacement au lieu du double-clic)
+- [ ] Auto-déplacement vers les fondations (montée automatique en fondation des cartes sécurisées / évidentes au fil du jeu)
+- [ ] Système de score en points (règles de score Klondike standard, affichage en jeu et records dans les statistiques)
 
 ## Idées pour plus tard (v2)
 - Mode gaucher
