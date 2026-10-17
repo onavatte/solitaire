@@ -1,6 +1,6 @@
 import React from 'react'
 import type { DrawCount } from '../engine'
-import type { QuickMoveMode, UserPreferences } from '../state/persistence'
+import type { AutoFoundationMode, QuickMoveMode, UserPreferences } from '../state/persistence'
 
 interface OptionsModalProps {
   preferences: UserPreferences
@@ -8,6 +8,7 @@ interface OptionsModalProps {
   onClose: () => void
   onChangeDrawCount: (count: DrawCount) => void
   onChangeQuickMoveMode: (mode: QuickMoveMode) => void
+  onChangeAutoFoundationMode: (mode: AutoFoundationMode) => void
   onToggleHaptic: () => void
   onToggleAnimations: () => void
   onOpenLab?: () => void
@@ -19,6 +20,7 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
   onClose,
   onChangeDrawCount,
   onChangeQuickMoveMode,
+  onChangeAutoFoundationMode,
   onToggleHaptic,
   onToggleAnimations,
   onOpenLab,
@@ -298,6 +300,71 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
                 }}
               >
                 Double-clic
+              </button>
+            </div>
+          </div>
+
+          {/* 5. Auto-déplacement vers les fondations */}
+          <div
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.25)',
+              padding: '0.9rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '0.3rem' }}>
+              Auto-déplacement fondations
+            </div>
+            <div
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--felt-text-muted)',
+                marginBottom: '0.6rem',
+              }}
+            >
+              Envoie automatiquement les As, 2 et cartes sans risque tactique.
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={() => onChangeAutoFoundationMode('safe')}
+                style={{
+                  minHeight: '40px',
+                  padding: '0.4rem',
+                  backgroundColor:
+                    preferences.autoFoundationMode === 'safe'
+                      ? 'var(--highlight-color)'
+                      : 'rgba(255, 255, 255, 0.1)',
+                  color: preferences.autoFoundationMode === 'safe' ? '#111' : 'var(--felt-text)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Cartes sûres
+              </button>
+              <button
+                type="button"
+                onClick={() => onChangeAutoFoundationMode('disabled')}
+                style={{
+                  minHeight: '40px',
+                  padding: '0.4rem',
+                  backgroundColor:
+                    preferences.autoFoundationMode === 'disabled'
+                      ? 'var(--highlight-color)'
+                      : 'rgba(255, 255, 255, 0.1)',
+                  color: preferences.autoFoundationMode === 'disabled' ? '#111' : 'var(--felt-text)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Désactivé
               </button>
             </div>
           </div>

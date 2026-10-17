@@ -28,6 +28,7 @@ interface BoardProps {
     | { readonly zone: 'tableau'; readonly column: number; readonly cardIndex?: number }
     | null
   disableAnimations?: boolean
+  onDealComplete?: () => void
 }
 
 export const Board: React.FC<BoardProps> = ({
@@ -48,6 +49,7 @@ export const Board: React.FC<BoardProps> = ({
   highlightTableau,
   selectedLocation,
   disableAnimations,
+  onDealComplete,
 }) => {
   const [manualDropMoves, setManualDropMoves] = React.useState<number | null>(null)
 
@@ -90,6 +92,7 @@ export const Board: React.FC<BoardProps> = ({
 
   useDealAnimation(dealId ?? 0, boardRef, {
     disabled: disableAnimations,
+    onComplete: onDealComplete,
   })
 
   // Vérifie si une carte fait partie de la séquence en cours de glissement

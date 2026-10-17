@@ -4,6 +4,7 @@ interface DealAnimationOptions {
   readonly disabled?: boolean
   readonly duration?: number // Durée de vol par carte en ms (ex: 220ms)
   readonly cardInterval?: number // Intervalle de décalage en ms (ex: 26ms)
+  readonly onComplete?: () => void
 }
 
 /**
@@ -35,13 +36,14 @@ export function useDealAnimation(
   containerRef: React.RefObject<HTMLElement | null>,
   options: DealAnimationOptions = {},
 ) {
+  const { disabled, duration = 220, cardInterval = 26, onComplete } = options
   const isDealingRef = useRef(false)
   const cleanupFnsRef = useRef<(() => void)[]>([])
 
   useLayoutEffect(() => {
     if (dealId === 0) return
     if (typeof window === 'undefined') return
-    if (options.disabled) return
+    if (disabled) return
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
 
     const container = containerRef.current
@@ -59,8 +61,7 @@ export function useDealAnimation(
 
     isDealingRef.current = true
 
-    const duration = options.duration ?? 220
-    const interval = options.cardInterval ?? 26
+    const interval = cardInterval
 
     // Nettoyer toute animation précédente si existante
     cleanupFnsRef.current.forEach((fn) => fn())
@@ -113,6 +114,7 @@ export function useDealAnimation(
     const totalDuration = 28 * interval + duration + 60
     const endTimer = setTimeout(() => {
       isDealingRef.current = false
+      onComplete?.()
     }, totalDuration)
     cleanups.push(() => clearTimeout(endTimer))
 
@@ -124,6 +126,7 @@ export function useDealAnimation(
         cleanupFnsRef.current.forEach((fn) => fn())
         cleanupFnsRef.current = []
         isDealingRef.current = false
+        onComplete?.()
       }
     }
 
@@ -135,6 +138,6 @@ export function useDealAnimation(
       cleanupFnsRef.current = []
       isDealingRef.current = false
     }
-  }, [dealId, containerRef, options.disabled, options.duration, options.cardInterval])
+  }, [cardInterval, containerRef, dealId, disabled, duration, onComplete])
 }
 

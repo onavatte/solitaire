@@ -3,6 +3,7 @@ import { findAutoMove, type DrawCount, type Location } from './engine'
 import {
   loadPreferences,
   savePreferences,
+  type AutoFoundationMode,
   type QuickMoveMode,
   type UserPreferences,
 } from './state/persistence'
@@ -33,6 +34,7 @@ export default function App() {
   )
   const [mockWon, setMockWon] = useState(false)
   const [dealId, setDealId] = useState(0)
+  const [isDealing, setIsDealing] = useState(false)
   const [victoryCelebrationMode, setVictoryCelebrationMode] = useState<VictoryMode>('fireworks-comics')
 
   const {
@@ -52,7 +54,10 @@ export default function App() {
     onHint,
     onNewGame,
     onResetStats,
-  } = useGame()
+  } = useGame(undefined, {
+    autoFoundationEnabled: preferences.autoFoundationMode === 'safe',
+    isDealing,
+  })
 
   const activeCelebrationMode: VictoryMode = mockWon
     ? victoryCelebrationMode
@@ -105,6 +110,7 @@ export default function App() {
     triggerHaptic(15)
     setIsGameWonDelayed(false)
     setMockWon(false)
+    setIsDealing(true)
     setDealId((prev) => prev + 1)
     onNewGame({ drawCount })
   }
@@ -114,6 +120,7 @@ export default function App() {
     triggerHaptic(15)
     savePreferences({ drawCount: nextCount })
     setPreferences((prev) => ({ ...prev, drawCount: nextCount }))
+    setIsDealing(true)
     setDealId((prev) => prev + 1)
     onNewGame({ drawCount: nextCount })
   }
@@ -142,6 +149,12 @@ export default function App() {
     triggerHaptic(12)
     savePreferences({ quickMoveMode: mode })
     setPreferences((prev) => ({ ...prev, quickMoveMode: mode }))
+  }
+
+  const handleChangeAutoFoundationMode = (mode: AutoFoundationMode) => {
+    triggerHaptic(12)
+    savePreferences({ autoFoundationMode: mode })
+    setPreferences((prev) => ({ ...prev, autoFoundationMode: mode }))
   }
 
   const handleStockClickWithHaptic = () => {
@@ -208,6 +221,7 @@ export default function App() {
         highlightFoundationIndex={highlightFoundationIndex}
         highlightTableau={highlightTableau}
         disableAnimations={preferences.disableAnimations}
+        onDealComplete={() => setIsDealing(false)}
         selectedLocation={
           selectedLocation?.zone === 'waste' || selectedLocation?.zone === 'tableau'
             ? selectedLocation
@@ -384,6 +398,7 @@ export default function App() {
         onClose={() => setIsOptionsOpen(false)}
         onChangeDrawCount={handleChangeDrawCount}
         onChangeQuickMoveMode={handleChangeQuickMoveMode}
+        onChangeAutoFoundationMode={handleChangeAutoFoundationMode}
         onToggleHaptic={handleToggleHaptic}
         onToggleAnimations={handleToggleAnimations}
         onOpenLab={() => setIsLabOpen(true)}

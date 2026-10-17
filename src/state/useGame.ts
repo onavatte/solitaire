@@ -8,6 +8,7 @@ import {
   draw,
   findAutoMove,
   findHint,
+  findNextSafeFoundationMove,
   initHistory,
   moveCards,
   recordMove,
@@ -33,6 +34,7 @@ export interface GameStoreState {
   readonly isAutocompleting: boolean
   readonly hasCountedPlayed: boolean
   readonly stats: GameStats
+  readonly allowAutoFoundation: boolean
 }
 
 export type GameAction =
@@ -46,6 +48,7 @@ export type GameAction =
   | { type: 'START_AUTOCOMPLETE' }
   | { type: 'STOP_AUTOCOMPLETE' }
   | { type: 'AUTOCOMPLETE_STEP' }
+  | { type: 'SAFE_FOUNDATION_STEP' }
   | { type: 'TICK_TIME'; deltaMs: number }
   | { type: 'SET_PAUSED'; isPaused: boolean }
   | { type: 'RESET_STATS' }
@@ -67,6 +70,7 @@ function createInitialStore(options?: DealOptions): GameStoreState {
       isAutocompleting: false,
       hasCountedPlayed: saved.hasCountedPlayed,
       stats,
+      allowAutoFoundation: true,
     }
   }
 
@@ -79,6 +83,7 @@ function createInitialStore(options?: DealOptions): GameStoreState {
     isAutocompleting: false,
     hasCountedPlayed: false,
     stats,
+    allowAutoFoundation: true,
   }
 }
 
@@ -116,6 +121,7 @@ function applyGameMove(
     activeHint: null,
     hasCountedPlayed: hasCounted,
     stats: nextStats,
+    allowAutoFoundation: true,
   }
 }
 
@@ -149,6 +155,7 @@ function gameReducer(state: GameStoreState, action: GameAction): GameStoreState 
         history: nextHistory,
         selectedLocation: null,
         activeHint: null,
+        allowAutoFoundation: false,
       }
     }
 
@@ -178,6 +185,7 @@ function gameReducer(state: GameStoreState, action: GameAction): GameStoreState 
         isAutocompleting: false,
         hasCountedPlayed: false,
         stats: state.stats,
+        allowAutoFoundation: true,
       }
     }
 
@@ -210,6 +218,18 @@ function gameReducer(state: GameStoreState, action: GameAction): GameStoreState 
         ...nextStore,
         isAutocompleting: nextGame.status !== 'won',
       }
+    }
+
+    case 'SAFE_FOUNDATION_STEP': {
+      if (state.isAutocompleting || state.history.present.status !== 'playing') {
+        return state
+      }
+      const move = findNextSafeFoundationMove(state.history.present)
+      if (!move) {
+        return state
+      }
+      const nextGame = moveCards(state.history.present, move.from, move.to)
+      return applyGameMove(state, nextGame)
     }
 
     case 'RESET_STATS': {
@@ -252,9 +272,16 @@ function gameReducer(state: GameStoreState, action: GameAction): GameStoreState 
   }
 }
 
-export function useGame(initialOptions?: DealOptions) {
+export interface UseGameConfig {
+  readonly autoFoundationEnabled?: boolean
+  readonly isDealing?: boolean
+}
+
+export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
   const [store, dispatch] = useReducer(gameReducer, initialOptions, createInitialStore)
   const game = store.history.present
+  const autoFoundationEnabled = config?.autoFoundationEnabled ?? true
+  const isDealing = config?.isDealing ?? false
 
   // Chronomètre : s'incrémente chaque seconde dès le premier coup, en pause en arrière-plan
   useEffect(() => {
@@ -290,6 +317,36 @@ export function useGame(initialOptions?: DealOptions) {
 
     return () => clearTimeout(timer)
   }, [store.isAutocompleting, game])
+
+  // Cadencement automatique de la montée des cartes sûres vers les fondations
+  useEffect(() => {
+    if (
+      !autoFoundationEnabled ||
+      !store.allowAutoFoundation ||
+      isDealing ||
+      store.isAutocompleting ||
+      game.status !== 'playing'
+    ) {
+      return
+    }
+
+    const move = findNextSafeFoundationMove(game)
+    if (!move) {
+      return
+    }
+
+    const timer = setTimeout(() => {
+      dispatch({ type: 'SAFE_FOUNDATION_STEP' })
+    }, 180)
+
+    return () => clearTimeout(timer)
+  }, [
+    autoFoundationEnabled,
+    store.allowAutoFoundation,
+    isDealing,
+    store.isAutocompleting,
+    game,
+  ])
 
   // Interaction : clic sur la pioche
   const handleStockClick = () => {
