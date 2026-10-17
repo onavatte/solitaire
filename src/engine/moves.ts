@@ -24,6 +24,7 @@ export function draw(state: GameState): GameState {
       stock: newStock,
       waste: [...state.waste, ...drawnCards],
       moves: state.moves + 1,
+      score: state.score,
     }
   }
 
@@ -33,11 +34,15 @@ export function draw(state: GameState): GameState {
       .reverse()
       .map((c) => ({ ...c, faceUp: false }))
 
+    const penalty = state.drawCount === 1 ? 100 : 20
+    const newScore = Math.max(0, state.score - penalty)
+
     return {
       ...state,
       stock: recycledStock,
       waste: [],
       moves: state.moves + 1,
+      score: newScore,
     }
   }
 
@@ -143,6 +148,24 @@ export function moveCards(
   let newStock = state.stock
   let newFoundations = state.foundations.map((f) => [...f])
   let newTableau = state.tableau.map((col) => [...col])
+  let scoreDelta = 0
+
+  // Points selon l'origine et la destination
+  if (from.zone === 'waste') {
+    if (to.zone === 'tableau') {
+      scoreDelta += 5
+    } else if (to.zone === 'foundation') {
+      scoreDelta += 10
+    }
+  } else if (from.zone === 'tableau') {
+    if (to.zone === 'foundation') {
+      scoreDelta += 10
+    }
+  } else if (from.zone === 'foundation') {
+    if (to.zone === 'tableau') {
+      scoreDelta -= 15
+    }
+  }
 
   // Retirer les cartes de la source
   if (from.zone === 'waste') {
@@ -162,6 +185,7 @@ export function moveCards(
         const lastCard = remaining[lastIndex]
         if (lastCard && !lastCard.faceUp) {
           remaining[lastIndex] = { ...lastCard, faceUp: true }
+          scoreDelta += 5 // +5 pour révélation d'une carte cachée
         }
       }
       newTableau[from.column] = remaining
@@ -182,6 +206,7 @@ export function moveCards(
   }
 
   const won = isGameWon({ foundations: newFoundations })
+  const newScore = Math.max(0, state.score + scoreDelta)
 
   return {
     ...state,
@@ -190,6 +215,7 @@ export function moveCards(
     foundations: newFoundations,
     tableau: newTableau,
     moves: state.moves + 1,
+    score: newScore,
     status: won ? 'won' : state.status,
   }
 }

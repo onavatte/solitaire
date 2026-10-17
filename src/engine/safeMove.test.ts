@@ -15,6 +15,7 @@ function makeEmptyGame(): GameState {
     drawCount: 1,
     moves: 0,
     elapsedMs: 0,
+    score: 0,
     seed: 123,
     status: 'playing',
   }

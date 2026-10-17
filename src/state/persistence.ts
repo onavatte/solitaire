@@ -5,6 +5,7 @@ export interface ModeStats {
   readonly gamesWon: number
   readonly bestTimeMs: number | null
   readonly bestMoves: number | null
+  readonly bestScore: number | null
   readonly currentStreak: number
   readonly maxStreak: number
 }
@@ -42,6 +43,7 @@ const DEFAULT_MODE_STATS: ModeStats = {
   gamesWon: 0,
   bestTimeMs: null,
   bestMoves: null,
+  bestScore: null,
   currentStreak: 0,
   maxStreak: 0,
 }
@@ -215,6 +217,7 @@ function sanitizeModeStats(raw: unknown): ModeStats {
     gamesWon: typeof raw['gamesWon'] === 'number' && raw['gamesWon'] >= 0 ? raw['gamesWon'] : 0,
     bestTimeMs: typeof raw['bestTimeMs'] === 'number' && raw['bestTimeMs'] > 0 ? raw['bestTimeMs'] : null,
     bestMoves: typeof raw['bestMoves'] === 'number' && raw['bestMoves'] > 0 ? raw['bestMoves'] : null,
+    bestScore: typeof raw['bestScore'] === 'number' && raw['bestScore'] >= 0 ? raw['bestScore'] : null,
     currentStreak: typeof raw['currentStreak'] === 'number' && raw['currentStreak'] >= 0 ? raw['currentStreak'] : 0,
     maxStreak: typeof raw['maxStreak'] === 'number' && raw['maxStreak'] >= 0 ? raw['maxStreak'] : 0,
   }
@@ -270,6 +273,7 @@ export function recordGameWon(
   drawCount: DrawCount,
   elapsedMs: number,
   moves: number,
+  score = 0,
 ): GameStats {
   const key = drawCount === 1 ? 'draw1' : 'draw3'
   const current = stats[key]
@@ -281,12 +285,15 @@ export function recordGameWon(
     current.bestTimeMs === null ? elapsedMs : Math.min(current.bestTimeMs, elapsedMs)
   const newBestMoves =
     current.bestMoves === null ? moves : Math.min(current.bestMoves, moves)
+  const newBestScore =
+    current.bestScore === null ? score : Math.max(current.bestScore, score)
 
   const updated: ModeStats = {
     gamesPlayed: Math.max(current.gamesPlayed, newGamesWon),
     gamesWon: newGamesWon,
     bestTimeMs: newBestTime,
     bestMoves: newBestMoves,
+    bestScore: newBestScore,
     currentStreak: newStreak,
     maxStreak: newMaxStreak,
   }

@@ -23,6 +23,7 @@ export interface GameState {
   readonly drawCount: DrawCount
   readonly moves: number
   readonly elapsedMs: number
+  readonly score: number
   readonly seed: string | number
   readonly status: GameStatus
 }

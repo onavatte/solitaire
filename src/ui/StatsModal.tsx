@@ -265,7 +265,6 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
           <div
             style={{
-              gridColumn: 'span 2',
               backgroundColor: 'rgba(0, 0, 0, 0.2)',
               padding: '0.8rem',
               borderRadius: '8px',
@@ -279,10 +278,32 @@ export const StatsModal: React.FC<StatsModalProps> = ({
                 marginBottom: '0.2rem',
               }}
             >
-              Meilleur score (moins de coups)
+              Moins de coups
             </div>
-            <div style={{ fontSize: '1.3rem', fontWeight: 700 }}>
-              {currentStats.bestMoves !== null ? `${currentStats.bestMoves} coups` : '—'}
+            <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>
+              {currentStats.bestMoves !== null ? `${currentStats.bestMoves}` : '—'}
+            </div>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              padding: '0.8rem',
+              borderRadius: '8px',
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '0.8rem',
+                color: 'var(--felt-text-muted)',
+                marginBottom: '0.2rem',
+              }}
+            >
+              Meilleur score
+            </div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--highlight-color)' }}>
+              {currentStats.bestScore !== null ? `${currentStats.bestScore} pts` : '—'}
             </div>
           </div>
         </div>

@@ -54,6 +54,7 @@ export function dealGame(options?: DealOptions): GameState {
     drawCount,
     moves: 0,
     elapsedMs: 0,
+    score: 0,
     seed,
     status: 'playing',
   }

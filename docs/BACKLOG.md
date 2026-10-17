@@ -51,7 +51,7 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [ ] Animations d'enseignes (particules de cœurs, carreaux, piques, trèfles) quand une carte arrive dans sa fondation
 - [x] *Smart auto-move* sur simple clic (envoi direct sur le meilleur emplacement au lieu du double-clic, avec option dans les réglages)
 - [x] Auto-déplacement vers les fondations (montée automatique en fondation des cartes sécurisées / évidentes au fil du jeu)
-- [ ] Système de score en points (règles de score Klondike standard, affichage en jeu et records dans les statistiques)
+- [x] Système de score en points (règles de score Klondike standard, affichage en jeu et records dans les statistiques)
 
 ## Idées pour plus tard (v2)
 - Mode gaucher

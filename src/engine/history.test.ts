@@ -22,6 +22,7 @@ function createEmptyState(overrides?: Partial<GameState>): GameState {
     drawCount: 1,
     moves: 0,
     elapsedMs: 0,
+    score: 0,
     seed: 1,
     status: 'playing',
     ...overrides,

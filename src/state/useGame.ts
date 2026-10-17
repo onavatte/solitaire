@@ -111,6 +111,7 @@ function applyGameMove(
       nextGame.drawCount,
       nextGame.elapsedMs,
       nextGame.moves,
+      nextGame.score,
     )
   }
 

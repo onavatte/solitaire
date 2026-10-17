@@ -201,8 +201,8 @@ export default function App() {
         color: 'var(--felt-text)',
       }}
     >
-      {/* En-tête supérieur avec temps et coups */}
-      <Header moves={game.moves} elapsedMs={game.elapsedMs} />
+      {/* En-tête supérieur avec temps, score et coups */}
+      <Header moves={game.moves} elapsedMs={game.elapsedMs} score={game.score} />
 
       {/* Plateau de jeu en 7 colonnes */}
       <Board
@@ -316,6 +316,8 @@ export default function App() {
           >
             <h2 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0' }}>Victoire !</h2>
             <p style={{ margin: '0 0 1rem 0', color: 'var(--felt-text-muted)', lineHeight: 1.5 }}>
+              Score : <strong style={{ color: 'var(--highlight-color)' }}>{game.score} points</strong>
+              <br />
               Donne résolue en <strong>{game.moves} coups</strong>
               <br />
               Temps : <strong>{Math.floor(game.elapsedMs / 60000)} min {Math.floor((game.elapsedMs % 60000) / 1000)} s</strong>

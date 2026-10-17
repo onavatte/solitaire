@@ -15,6 +15,7 @@ function createEmptyState(overrides?: Partial<GameState>): GameState {
     drawCount: 1,
     moves: 0,
     elapsedMs: 0,
+    score: 0,
     seed: 1,
     status: 'playing',
     ...overrides,
@@ -294,4 +295,137 @@ describe('findAutoMove', () => {
     expect(target).toBeNull()
   })
 })
+
+describe('score Klondike', () => {
+  it('ajoute 5 points quand une carte passe de la défausse au tableau', () => {
+    const black8 = makeCard('spades', 8)
+    const red7 = makeCard('hearts', 7)
+    const state = createEmptyState({
+      waste: [red7],
+      tableau: [[black8], [], [], [], [], [], []],
+      score: 10,
+    })
+
+    const next = moveCards(state, { zone: 'waste' }, { zone: 'tableau', column: 0 })
+    expect(next.score).toBe(15)
+  })
+
+  it('ajoute 10 points quand une carte passe de la défausse à la fondation', () => {
+    const ace = makeCard('hearts', 1)
+    const state = createEmptyState({
+      waste: [ace],
+      score: 0,
+    })
+
+    const next = moveCards(state, { zone: 'waste' }, { zone: 'foundation', foundationIndex: 0 })
+    expect(next.score).toBe(10)
+  })
+
+  it('ajoute 10 points quand une carte passe du tableau à la fondation sans révéler de carte cachée', () => {
+    const ace = makeCard('clubs', 1)
+    const state = createEmptyState({
+      tableau: [[ace], [], [], [], [], [], []],
+      score: 5,
+    })
+
+    const next = moveCards(
+      state,
+      { zone: 'tableau', column: 0, cardIndex: 0 },
+      { zone: 'foundation', foundationIndex: 0 },
+    )
+    expect(next.score).toBe(15)
+  })
+
+  it('ajoute 15 points (10 + 5) quand le départ vers la fondation révèle une carte cachée', () => {
+    const hidden = makeCard('spades', 10, false)
+    const ace = makeCard('spades', 1, true)
+    const state = createEmptyState({
+      tableau: [[hidden, ace], [], [], [], [], [], []],
+      score: 20,
+    })
+
+    const next = moveCards(
+      state,
+      { zone: 'tableau', column: 0, cardIndex: 1 },
+      { zone: 'foundation', foundationIndex: 0 },
+    )
+    expect(next.score).toBe(35) // 20 + 10 (fondation) + 5 (révélation)
+  })
+
+  it('ajoute 5 points quand un déplacement dans le tableau révèle une carte cachée', () => {
+    const hidden = makeCard('diamonds', 9, false)
+    const red7 = makeCard('hearts', 7, true)
+    const black8 = makeCard('spades', 8, true)
+    const state = createEmptyState({
+      tableau: [[hidden, red7], [black8], [], [], [], [], []],
+      score: 10,
+    })
+
+    const next = moveCards(
+      state,
+      { zone: 'tableau', column: 0, cardIndex: 1 },
+      { zone: 'tableau', column: 1 },
+    )
+    expect(next.score).toBe(15) // 10 + 5 (révélation)
+  })
+
+  it('retire 15 points quand une carte descend d une fondation vers le tableau', () => {
+    const black8 = makeCard('spades', 8)
+    const red7 = makeCard('hearts', 7)
+    const state = createEmptyState({
+      foundations: [[red7], [], [], []],
+      tableau: [[black8], [], [], [], [], [], []],
+      score: 40,
+    })
+
+    const next = moveCards(
+      state,
+      { zone: 'foundation', foundationIndex: 0 },
+      { zone: 'tableau', column: 0 },
+    )
+    expect(next.score).toBe(25) // 40 - 15
+  })
+
+  it('ne laisse jamais le score descendre en dessous de 0', () => {
+    const black8 = makeCard('spades', 8)
+    const red7 = makeCard('hearts', 7)
+    const state = createEmptyState({
+      foundations: [[red7], [], [], []],
+      tableau: [[black8], [], [], [], [], [], []],
+      score: 5,
+    })
+
+    const next = moveCards(
+      state,
+      { zone: 'foundation', foundationIndex: 0 },
+      { zone: 'tableau', column: 0 },
+    )
+    expect(next.score).toBe(0) // Math.max(0, 5 - 15)
+  })
+
+  it('pénalise de 100 points le recyclage de la pioche en tirage 1 carte', () => {
+    const state = createEmptyState({
+      stock: [],
+      waste: [makeCard('hearts', 5)],
+      drawCount: 1,
+      score: 150,
+    })
+
+    const next = draw(state)
+    expect(next.score).toBe(50) // 150 - 100
+  })
+
+  it('pénalise de 20 points le recyclage de la pioche en tirage 3 cartes', () => {
+    const state = createEmptyState({
+      stock: [],
+      waste: [makeCard('hearts', 5)],
+      drawCount: 3,
+      score: 50,
+    })
+
+    const next = draw(state)
+    expect(next.score).toBe(30) // 50 - 20
+  })
+})
+
 

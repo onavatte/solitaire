@@ -128,19 +128,21 @@ describe('persistence', () => {
       let stats = loadStats()
       stats = recordGameStarted(stats, 1)
 
-      // 1ère victoire : 120s (120000ms), 85 coups
-      stats = recordGameWon(stats, 1, 120000, 85)
+      // 1ère victoire : 120s (120000ms), 85 coups, 250 points
+      stats = recordGameWon(stats, 1, 120000, 85, 250)
       expect(stats.draw1.gamesWon).toBe(1)
       expect(stats.draw1.bestTimeMs).toBe(120000)
       expect(stats.draw1.bestMoves).toBe(85)
+      expect(stats.draw1.bestScore).toBe(250)
       expect(stats.draw1.currentStreak).toBe(1)
       expect(stats.draw1.maxStreak).toBe(1)
 
-      // 2ème victoire : meilleur temps (90s) mais moins bon coups (95)
-      stats = recordGameWon(stats, 1, 90000, 95)
+      // 2ème victoire : meilleur temps (90s) mais moins bon coups (95) et meilleur score (310)
+      stats = recordGameWon(stats, 1, 90000, 95, 310)
       expect(stats.draw1.gamesWon).toBe(2)
       expect(stats.draw1.bestTimeMs).toBe(90000)
       expect(stats.draw1.bestMoves).toBe(85) // conservé
+      expect(stats.draw1.bestScore).toBe(310)
       expect(stats.draw1.currentStreak).toBe(2)
       expect(stats.draw1.maxStreak).toBe(2)
     })
