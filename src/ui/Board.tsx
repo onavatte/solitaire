@@ -4,10 +4,12 @@ import { CardView } from './CardView'
 import { DragOverlay } from './DragOverlay'
 import { Slot } from './Slot'
 import { useDrag } from './input/useDrag'
+import { useDealAnimation } from './useDealAnimation'
 import { useFlipAnimation } from './useFlipAnimation'
 
 interface BoardProps {
   state: GameState
+  dealId?: number
   onStockClick: () => void
   onWasteClick?: () => void
   onWasteDoubleClick?: () => void
@@ -30,6 +32,7 @@ interface BoardProps {
 
 export const Board: React.FC<BoardProps> = ({
   state,
+  dealId,
   onStockClick,
   onWasteClick,
   onWasteDoubleClick,
@@ -83,6 +86,10 @@ export const Board: React.FC<BoardProps> = ({
   const boardRef = useFlipAnimation(state.moves, {
     disabled: Boolean(dragged) || disableAnimations,
     isManualDrop,
+  })
+
+  useDealAnimation(dealId ?? 0, boardRef, {
+    disabled: disableAnimations,
   })
 
   // Vérifie si une carte fait partie de la séquence en cours de glissement
@@ -293,7 +300,7 @@ export const Board: React.FC<BoardProps> = ({
         </div>
 
         {/* Colonne 6 : Talon / Pioche (Stock, sous le pouce droit) */}
-        <div style={{ position: 'relative' }}>
+        <div data-stock-pile="true" style={{ position: 'relative' }}>
           <Slot
             label={state.stock.length > 0 ? undefined : '↺'}
             onClick={onStockClick}
@@ -410,6 +417,9 @@ export const Board: React.FC<BoardProps> = ({
                   <div
                     key={card.id}
                     data-card-id={card.id}
+                    data-tableau-card="true"
+                    data-col-index={colIndex}
+                    data-card-index={cardIndex}
                     data-base-z-index={cardIndex + 1}
                     onPointerDown={
                       card.faceUp

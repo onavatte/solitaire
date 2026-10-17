@@ -40,7 +40,7 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Header supérieur : déplacer le chrono et le compteur de coups en haut (libérer l'espace en bas)
 - [x] Footer (barre d'actions) : boutons verticaux (icône + libellé compact) de droite à gauche (Annuler ↩, Indice 💡, Nouvelle 🃏, Stats 📊, Options ⚙️)
 - [x] Modal Options ⚙️ : choix pioche (1 ou 3 cartes), retour haptique (on/off), désactivation des transitions
-- [ ] Animation de distribution pour les nouvelles parties
+- [x] Animation de distribution pour les nouvelles parties
 - [x] Animation de victoire festive (feux d'artifice classiques, comics pop et confettis aléatoires)
 - [x] Ajustement du layout des figures (Valet, Dame, Roi)
 - [x] Ajustement de l'animation de flip de carte (retournement sur place)

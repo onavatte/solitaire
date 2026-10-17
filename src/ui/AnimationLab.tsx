@@ -6,6 +6,7 @@ import { VictoryCelebration, type VictoryMode } from './VictoryCelebration'
 interface AnimationLabProps {
   onClose: () => void
   onTriggerVictory?: (mode: VictoryMode) => void
+  onTriggerDeal?: () => void
 }
 
 const SAMPLE_CARDS: Card[] = [
@@ -18,7 +19,7 @@ const SAMPLE_CARDS: Card[] = [
 
 type FlipVariant = 'current' | 'full3d' | 'elevated3d'
 
-export const AnimationLab: React.FC<AnimationLabProps> = ({ onClose, onTriggerVictory }) => {
+export const AnimationLab: React.FC<AnimationLabProps> = ({ onClose, onTriggerVictory, onTriggerDeal }) => {
   const [selectedCardIndex, setSelectedCardIndex] = useState(0)
   const [isFaceUp, setIsFaceUp] = useState(false)
   const [durationMs, setDurationMs] = useState(1000) // Ralenti par défaut à 1000ms pour bien voir
@@ -392,6 +393,31 @@ export const AnimationLab: React.FC<AnimationLabProps> = ({ onClose, onTriggerVi
             onChange={(e) => setManualProgress(Number(e.target.value))}
             style={{ width: '100%', cursor: 'pointer' }}
           />
+        </div>
+
+        {/* Section animation de distribution */}
+        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.15)', paddingTop: '0.8rem' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '0.4rem' }}>
+            Distribution des 28 cartes (Nouvelle donne) :
+          </div>
+          <button
+            type="button"
+            onClick={() => onTriggerDeal?.()}
+            style={{
+              width: '100%',
+              minHeight: '38px',
+              padding: '0.5rem 1rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.12)',
+              color: 'var(--highlight-color)',
+              border: '1px solid var(--highlight-color)',
+              borderRadius: '6px',
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+            }}
+          >
+            🃏 Lancer une distribution animée
+          </button>
         </div>
 
         {/* Section animation de victoire */}

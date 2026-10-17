@@ -27,6 +27,7 @@ export default function App() {
     () => typeof window !== 'undefined' && window.location.search.includes('lab'),
   )
   const [mockWon, setMockWon] = useState(false)
+  const [dealId, setDealId] = useState(0)
   const [victoryCelebrationMode, setVictoryCelebrationMode] = useState<VictoryMode>('fireworks-comics')
 
   const {
@@ -99,6 +100,7 @@ export default function App() {
     triggerHaptic(15)
     setIsGameWonDelayed(false)
     setMockWon(false)
+    setDealId((prev) => prev + 1)
     onNewGame({ drawCount })
   }
 
@@ -107,6 +109,7 @@ export default function App() {
     triggerHaptic(15)
     savePreferences({ drawCount: nextCount })
     setPreferences((prev) => ({ ...prev, drawCount: nextCount }))
+    setDealId((prev) => prev + 1)
     onNewGame({ drawCount: nextCount })
   }
 
@@ -163,6 +166,7 @@ export default function App() {
       {/* Plateau de jeu en 7 colonnes */}
       <Board
         state={game}
+        dealId={dealId}
         onStockClick={handleStockClickWithHaptic}
         onWasteClick={() => onSelectOrMove({ zone: 'waste' })}
         onWasteDoubleClick={() => handleQuickMoveWithHaptic({ zone: 'waste' })}
@@ -375,6 +379,10 @@ export default function App() {
             setIsLabOpen(false)
             setVictoryCelebrationMode(mode)
             setMockWon(true)
+          }}
+          onTriggerDeal={() => {
+            setIsLabOpen(false)
+            handleStartNewGame()
           }}
         />
       )}
