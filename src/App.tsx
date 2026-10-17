@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { DrawCount } from './engine'
 import { loadPreferences, savePreferences, type UserPreferences } from './state/persistence'
 import { useGame } from './state/useGame'
@@ -52,6 +52,21 @@ export default function App() {
     ? victoryCelebrationMode
     : getVictoryCelebrationMode(game.moves, game.elapsedMs)
 
+  const [isGameWonDelayed, setIsGameWonDelayed] = useState(false)
+
+  // Temporisation à la victoire : laisse les 200ms de l'animation FLIP au dernier Roi pour atterrir
+  useEffect(() => {
+    if (game.status !== 'won') {
+      return
+    }
+    const timer = setTimeout(() => {
+      setIsGameWonDelayed(true)
+    }, 350)
+    return () => clearTimeout(timer)
+  }, [game.status])
+
+  const showVictoryOverlay = mockWon || (game.status === 'won' && isGameWonDelayed)
+
   const drawCount = preferences.drawCount
 
   const triggerHaptic = (duration = 12) => {
@@ -82,6 +97,8 @@ export default function App() {
 
   const handleStartNewGame = () => {
     triggerHaptic(15)
+    setIsGameWonDelayed(false)
+    setMockWon(false)
     onNewGame({ drawCount })
   }
 
@@ -205,7 +222,7 @@ export default function App() {
       )}
 
       {/* Animation et Bannière de victoire */}
-      {(game.status === 'won' || mockWon) && (
+      {showVictoryOverlay && (
         <div
           style={{
             position: 'fixed',
@@ -260,10 +277,7 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               <button
                 type="button"
-                onClick={() => {
-                  setMockWon(false)
-                  handleStartNewGame()
-                }}
+                onClick={handleStartNewGame}
                 style={{
                   minHeight: '44px',
                   padding: '0.75rem 1.5rem',

@@ -120,6 +120,8 @@ export const Board: React.FC<BoardProps> = ({
         boxSizing: 'border-box',
         overflow: 'hidden',
         position: 'relative',
+        zIndex: 10,
+        isolation: 'isolate',
       }}
     >
       {/* Rangée supérieure (ergonomie droitier) : 4 Fondations (0..3), Espace (4), Défausse (5), Pioche (6) */}
