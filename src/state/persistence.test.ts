@@ -67,14 +67,16 @@ describe('persistence', () => {
       expect(loadPreferences().drawCount).toBe(1)
       expect(loadPreferences().hapticFeedback).toBe(true)
       expect(loadPreferences().disableAnimations).toBe(false)
+      expect(loadPreferences().quickMoveMode).toBe('single-tap')
     })
 
     it('sauvegarde et charge les préférences correctement', () => {
-      savePreferences({ drawCount: 3, hapticFeedback: false, disableAnimations: true })
+      savePreferences({ drawCount: 3, hapticFeedback: false, disableAnimations: true, quickMoveMode: 'double-tap' })
       const prefs = loadPreferences()
       expect(prefs.drawCount).toBe(3)
       expect(prefs.hapticFeedback).toBe(false)
       expect(prefs.disableAnimations).toBe(true)
+      expect(prefs.quickMoveMode).toBe('double-tap')
     })
 
     it('permet la mise à jour partielle des préférences', () => {

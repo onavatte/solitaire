@@ -14,10 +14,13 @@ export interface GameStats {
   readonly draw3: ModeStats
 }
 
+export type QuickMoveMode = 'single-tap' | 'double-tap'
+
 export interface UserPreferences {
   readonly drawCount: DrawCount
   readonly hapticFeedback: boolean
   readonly disableAnimations: boolean
+  readonly quickMoveMode: QuickMoveMode
 }
 
 export interface SavedGame {
@@ -52,6 +55,7 @@ export function getDefaultPreferences(): UserPreferences {
     drawCount: 1,
     hapticFeedback: true,
     disableAnimations: false,
+    quickMoveMode: 'single-tap',
   }
 }
 
@@ -169,8 +173,12 @@ export function loadPreferences(): UserPreferences {
       typeof parsed['disableAnimations'] === 'boolean'
         ? parsed['disableAnimations']
         : defaults.disableAnimations
+    const quickMoveMode: QuickMoveMode =
+      parsed['quickMoveMode'] === 'single-tap' || parsed['quickMoveMode'] === 'double-tap'
+        ? parsed['quickMoveMode']
+        : defaults.quickMoveMode
 
-    return { drawCount, hapticFeedback, disableAnimations }
+    return { drawCount, hapticFeedback, disableAnimations, quickMoveMode }
   } catch {
     return defaults
   }

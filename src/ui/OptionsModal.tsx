@@ -1,12 +1,13 @@
 import React from 'react'
 import type { DrawCount } from '../engine'
-import type { UserPreferences } from '../state/persistence'
+import type { QuickMoveMode, UserPreferences } from '../state/persistence'
 
 interface OptionsModalProps {
   preferences: UserPreferences
   isOpen: boolean
   onClose: () => void
   onChangeDrawCount: (count: DrawCount) => void
+  onChangeQuickMoveMode: (mode: QuickMoveMode) => void
   onToggleHaptic: () => void
   onToggleAnimations: () => void
   onOpenLab?: () => void
@@ -17,6 +18,7 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
   isOpen,
   onClose,
   onChangeDrawCount,
+  onChangeQuickMoveMode,
   onToggleHaptic,
   onToggleAnimations,
   onOpenLab,
@@ -233,6 +235,71 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
             >
               {!preferences.disableAnimations ? 'Oui' : 'Non'}
             </button>
+          </div>
+
+          {/* 4. Coup automatique (Smart move) */}
+          <div
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.25)',
+              padding: '0.9rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '0.3rem' }}>
+              Coup rapide (Smart Move)
+            </div>
+            <div
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--felt-text-muted)',
+                marginBottom: '0.6rem',
+              }}
+            >
+              Déplace automatiquement la carte vers le meilleur coup légal.
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={() => onChangeQuickMoveMode('single-tap')}
+                style={{
+                  minHeight: '40px',
+                  padding: '0.4rem',
+                  backgroundColor:
+                    preferences.quickMoveMode === 'single-tap'
+                      ? 'var(--highlight-color)'
+                      : 'rgba(255, 255, 255, 0.1)',
+                  color: preferences.quickMoveMode === 'single-tap' ? '#111' : 'var(--felt-text)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Simple clic
+              </button>
+              <button
+                type="button"
+                onClick={() => onChangeQuickMoveMode('double-tap')}
+                style={{
+                  minHeight: '40px',
+                  padding: '0.4rem',
+                  backgroundColor:
+                    preferences.quickMoveMode === 'double-tap'
+                      ? 'var(--highlight-color)'
+                      : 'rgba(255, 255, 255, 0.1)',
+                  color: preferences.quickMoveMode === 'double-tap' ? '#111' : 'var(--felt-text)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Double-clic
+              </button>
+            </div>
           </div>
         </div>
 

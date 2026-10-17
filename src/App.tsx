@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
-import type { DrawCount } from './engine'
-import { loadPreferences, savePreferences, type UserPreferences } from './state/persistence'
+import { findAutoMove, type DrawCount, type Location } from './engine'
+import {
+  loadPreferences,
+  savePreferences,
+  type QuickMoveMode,
+  type UserPreferences,
+} from './state/persistence'
 import { useGame } from './state/useGame'
 import { AnimationLab } from './ui/AnimationLab'
 import { Board } from './ui/Board'
@@ -133,6 +138,12 @@ export default function App() {
     setPreferences((prev) => ({ ...prev, disableAnimations: next }))
   }
 
+  const handleChangeQuickMoveMode = (mode: QuickMoveMode) => {
+    triggerHaptic(12)
+    savePreferences({ quickMoveMode: mode })
+    setPreferences((prev) => ({ ...prev, quickMoveMode: mode }))
+  }
+
   const handleStockClickWithHaptic = () => {
     triggerHaptic(10)
     onStockClick()
@@ -146,6 +157,19 @@ export default function App() {
   const handleQuickMoveWithHaptic: typeof onQuickMoveToFoundation = (from) => {
     triggerHaptic(14)
     onQuickMoveToFoundation(from)
+  }
+
+  // Clic/Tap : coup rapide intelligent si single-tap, ou sélection classique
+  const handleCardClickWithSmartMove = (location: Location) => {
+    if (preferences.quickMoveMode === 'single-tap' && !selectedLocation) {
+      const autoTarget = findAutoMove(game, location)
+      if (autoTarget) {
+        handleMoveCardsWithHaptic(location, autoTarget)
+        return
+      }
+    }
+    triggerHaptic(10)
+    onSelectOrMove(location)
   }
 
   return (
@@ -168,11 +192,11 @@ export default function App() {
         state={game}
         dealId={dealId}
         onStockClick={handleStockClickWithHaptic}
-        onWasteClick={() => onSelectOrMove({ zone: 'waste' })}
+        onWasteClick={() => handleCardClickWithSmartMove({ zone: 'waste' })}
         onWasteDoubleClick={() => handleQuickMoveWithHaptic({ zone: 'waste' })}
         onFoundationClick={(fIndex) => onSelectOrMove({ zone: 'foundation', foundationIndex: fIndex })}
         onTableauCardClick={(col, cardIndex) => {
-          onSelectOrMove({ zone: 'tableau', column: col, cardIndex })
+          handleCardClickWithSmartMove({ zone: 'tableau', column: col, cardIndex })
         }}
         onTableauCardDoubleClick={(col, cardIndex) => {
           handleQuickMoveWithHaptic({ zone: 'tableau', column: col, cardIndex })
@@ -359,6 +383,7 @@ export default function App() {
         isOpen={isOptionsOpen}
         onClose={() => setIsOptionsOpen(false)}
         onChangeDrawCount={handleChangeDrawCount}
+        onChangeQuickMoveMode={handleChangeQuickMoveMode}
         onToggleHaptic={handleToggleHaptic}
         onToggleAnimations={handleToggleAnimations}
         onOpenLab={() => setIsLabOpen(true)}
