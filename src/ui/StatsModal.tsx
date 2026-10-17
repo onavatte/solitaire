@@ -51,7 +51,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 110,
+        zIndex: 1000,
         backdropFilter: 'blur(4px)',
         padding: '1rem',
       }}

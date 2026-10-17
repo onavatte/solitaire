@@ -255,6 +255,7 @@ export default function App() {
           {/* 2. Feux d'artifice nets et éclatants (au-dessus du flou) */}
           <VictoryCelebration
             mode={activeCelebrationMode}
+            paused={isStatsOpen || isOptionsOpen}
             style={{ zIndex: 2 }}
           />
 

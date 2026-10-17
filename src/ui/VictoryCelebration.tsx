@@ -4,6 +4,7 @@ export type VictoryMode = 'fireworks-classic' | 'fireworks-comics' | 'confetti'
 
 interface VictoryCelebrationProps {
   mode?: VictoryMode
+  paused?: boolean
   onClose?: () => void
   style?: React.CSSProperties
 }
@@ -136,10 +137,15 @@ interface ConfettiParticle {
 
 export const VictoryCelebration: React.FC<VictoryCelebrationProps> = ({
   mode = 'fireworks-classic',
+  paused = false,
   onClose,
   style,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const pausedRef = useRef(paused)
+  useEffect(() => {
+    pausedRef.current = paused
+  }, [paused])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -319,8 +325,22 @@ export const VictoryCelebration: React.FC<VictoryCelebrationProps> = ({
       launchSalvo(0, 3)
     }
 
+    let wasPaused = false
+
     // Boucle d'animation (60 FPS)
     const animate = (timestamp: number) => {
+      if (pausedRef.current) {
+        wasPaused = true
+        animationFrameId = requestAnimationFrame(animate)
+        return
+      }
+
+      if (wasPaused) {
+        lastRocketTime = timestamp
+        lastConfettiTime = timestamp
+        wasPaused = false
+      }
+
       // Efface toujours le canvas pour préserver la transparence sur le tapis feutrine
       ctx.clearRect(0, 0, screenWidth, screenHeight)
 
