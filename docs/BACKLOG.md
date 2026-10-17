@@ -48,7 +48,7 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [ ] Audit Lighthouse PWA, tests sur les deux téléphones
 
 ## Jalon 4 — Gameplay, Ergonomie & Finitions interactives
-- [ ] Animations d'enseignes (particules de cœurs, carreaux, piques, trèfles) quand une carte arrive dans sa fondation
+- [x] Animations d'enseignes (onde de symbole semi-transparente de cœur, carreau, pique, trèfle grossissant en fondu quand une carte arrive dans sa fondation)
 - [x] *Smart auto-move* sur simple clic (envoi direct sur le meilleur emplacement au lieu du double-clic, avec option dans les réglages)
 - [x] Auto-déplacement vers les fondations (montée automatique en fondation des cartes sécurisées / évidentes au fil du jeu)
 - [x] Système de score en points (règles de score Klondike standard, affichage en jeu et records dans les statistiques)

@@ -90,10 +90,32 @@ body {
   animation: cardReveal 0.22s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
 }
 
+/* Onde de symbole d'enseigne lors de l'arrivée en fondation */
+@keyframes suitPulseFade {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.85;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.suit-pulse-fade {
+  animation: suitPulseFade 0.5s cubic-bezier(0.2, 0.85, 0.35, 1) forwards;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
 /* Respect strict de prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .card-revealed,
-  .card-flip-3d {
+  .card-flip-3d,
+  .suit-pulse-fade {
     animation: none !important;
     transform: none !important;
     transition: none !important;

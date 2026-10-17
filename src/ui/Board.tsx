@@ -1,8 +1,9 @@
 import React from 'react'
-import type { GameState, Location } from '../engine'
+import type { GameState, Location, Suit } from '../engine'
 import { CardView } from './CardView'
 import { DragOverlay } from './DragOverlay'
 import { Slot } from './Slot'
+import { SuitPulse } from './SuitPulse'
 import { useDrag } from './input/useDrag'
 import { useDealAnimation } from './useDealAnimation'
 import { useFlipAnimation } from './useFlipAnimation'
@@ -31,6 +32,12 @@ interface BoardProps {
   onDealComplete?: () => void
 }
 
+interface ActivePulse {
+  id: number
+  foundationIndex: number
+  suit: Suit
+}
+
 export const Board: React.FC<BoardProps> = ({
   state,
   dealId,
@@ -52,6 +59,53 @@ export const Board: React.FC<BoardProps> = ({
   onDealComplete,
 }) => {
   const [manualDropMoves, setManualDropMoves] = React.useState<number | null>(null)
+  const [activePulses, setActivePulses] = React.useState<ActivePulse[]>([])
+  const prevFoundationsRef = React.useRef(state.foundations)
+  const pulseIdRef = React.useRef(0)
+
+  // Détection de l'arrivée d'une nouvelle carte en fondation pour déclencher l'onde visuelle
+  React.useEffect(() => {
+    if (disableAnimations) {
+      prevFoundationsRef.current = state.foundations
+      return
+    }
+
+    const prev = prevFoundationsRef.current
+    const curr = state.foundations
+    prevFoundationsRef.current = curr
+
+    // Ne pas animer lors du chargement initial ou réinitialisation
+    if (state.moves === 0) {
+      return
+    }
+
+    const newPulses: ActivePulse[] = []
+    curr.forEach((pile, index) => {
+      const prevPile = prev[index]
+      if (pile.length > (prevPile?.length ?? 0)) {
+        const top = pile[pile.length - 1]
+        if (top) {
+          pulseIdRef.current += 1
+          newPulses.push({
+            id: pulseIdRef.current,
+            foundationIndex: index,
+            suit: top.suit,
+          })
+        }
+      }
+    })
+
+    if (newPulses.length > 0) {
+      const raf = requestAnimationFrame(() => {
+        setActivePulses((current) => [...current, ...newPulses])
+      })
+      return () => cancelAnimationFrame(raf)
+    }
+  }, [state.foundations, state.moves, disableAnimations])
+
+  const handlePulseComplete = (id: number) => {
+    setActivePulses((current) => current.filter((p) => p.id !== id))
+  }
 
   const {
     dragged,
@@ -204,6 +258,17 @@ export const Board: React.FC<BoardProps> = ({
                     />
                   </div>
                 )}
+
+                {/* Onde de symbole d'enseigne lors de l'arrivée d'une carte */}
+                {activePulses
+                  .filter((p) => p.foundationIndex === index)
+                  .map((pulse) => (
+                    <SuitPulse
+                      key={pulse.id}
+                      suit={pulse.suit}
+                      onComplete={() => handlePulseComplete(pulse.id)}
+                    />
+                  ))}
               </Slot>
             </div>
           )

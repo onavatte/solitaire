@@ -31,4 +31,9 @@ describe('cardSymbols helpers', () => {
     const { CourtFigure } = await import('./CourtFigures')
     expect(typeof CourtFigure).toBe('function')
   })
+
+  it('exporte SuitPulse correctement', async () => {
+    const { SuitPulse } = await import('./SuitPulse')
+    expect(typeof SuitPulse).toBe('function')
+  })
 })
