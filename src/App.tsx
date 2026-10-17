@@ -9,6 +9,15 @@ import { OptionsModal } from './ui/OptionsModal'
 import { StatsModal } from './ui/StatsModal'
 import { Toolbar } from './ui/Toolbar'
 import { UpdatePrompt } from './ui/UpdatePrompt'
+import { VictoryCelebration, type VictoryMode } from './ui/VictoryCelebration'
+
+const CELEBRATION_MODES: VictoryMode[] = ['fireworks-comics', 'fireworks-classic', 'confetti']
+
+function getVictoryCelebrationMode(moves: number, elapsedMs: number): VictoryMode {
+  // Calcul pur déterministe pour React Compiler : varie à chaque partie gagnée
+  const hash = Math.abs((moves * 31 + Math.floor(elapsedMs / 1000)) % CELEBRATION_MODES.length)
+  return CELEBRATION_MODES[hash] ?? 'fireworks-comics'
+}
 
 export default function App() {
   const [preferences, setPreferences] = useState<UserPreferences>(() => loadPreferences())
@@ -18,6 +27,7 @@ export default function App() {
     () => typeof window !== 'undefined' && window.location.search.includes('lab'),
   )
   const [mockWon, setMockWon] = useState(false)
+  const [victoryCelebrationMode, setVictoryCelebrationMode] = useState<VictoryMode>('fireworks-comics')
 
   const {
     game,
@@ -37,6 +47,10 @@ export default function App() {
     onNewGame,
     onResetStats,
   } = useGame()
+
+  const activeCelebrationMode: VictoryMode = mockWon
+    ? victoryCelebrationMode
+    : getVictoryCelebrationMode(game.moves, game.elapsedMs)
 
   const drawCount = preferences.drawCount
 
@@ -190,25 +204,44 @@ export default function App() {
         </div>
       )}
 
-      {/* Bannière de victoire */}
+      {/* Animation et Bannière de victoire */}
       {(game.status === 'won' || mockWon) && (
         <div
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 950,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 100,
-            backdropFilter: 'blur(4px)',
             padding: '1rem',
             textAlign: 'center',
           }}
         >
+          {/* 1. Voile sombre floutant le tapis de jeu en arrière-plan */}
           <div
             style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.65)',
+              backdropFilter: 'blur(3px)',
+              WebkitBackdropFilter: 'blur(3px)',
+              zIndex: 1,
+            }}
+          />
+
+          {/* 2. Feux d'artifice nets et éclatants (au-dessus du flou) */}
+          <VictoryCelebration
+            mode={activeCelebrationMode}
+            style={{ zIndex: 2 }}
+          />
+
+          {/* 3. Boîte de dialogue de victoire au premier plan */}
+          <div
+            style={{
+              position: 'relative',
+              zIndex: 3,
               backgroundColor: '#1b4d29',
               border: '2px solid rgba(255, 255, 255, 0.3)',
               borderRadius: '12px',
@@ -263,6 +296,29 @@ export default function App() {
               >
                 Voir mes statistiques
               </button>
+
+              {mockWon && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMockWon(false)
+                    setIsLabOpen(true)
+                  }}
+                  style={{
+                    minHeight: '44px',
+                    padding: '0.65rem 1.2rem',
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    color: '#ffffff',
+                    border: '1px solid rgba(255, 255, 255, 0.4)',
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ← Revenir au Laboratoire
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -301,8 +357,9 @@ export default function App() {
       {isLabOpen && (
         <AnimationLab
           onClose={() => setIsLabOpen(false)}
-          onTriggerVictory={() => {
+          onTriggerVictory={(mode) => {
             setIsLabOpen(false)
+            setVictoryCelebrationMode(mode)
             setMockWon(true)
           }}
         />

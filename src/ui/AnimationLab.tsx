@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import type { Card } from '../engine'
 import { CardView } from './CardView'
+import { VictoryCelebration, type VictoryMode } from './VictoryCelebration'
 
 interface AnimationLabProps {
   onClose: () => void
-  onTriggerVictory?: () => void
+  onTriggerVictory?: (mode: VictoryMode) => void
 }
 
 const SAMPLE_CARDS: Card[] = [
@@ -23,6 +24,8 @@ export const AnimationLab: React.FC<AnimationLabProps> = ({ onClose, onTriggerVi
   const [durationMs, setDurationMs] = useState(1000) // Ralenti par défaut à 1000ms pour bien voir
   const [variant, setVariant] = useState<FlipVariant>('full3d')
   const [manualProgress, setManualProgress] = useState<number | null>(null) // null = mode automatique
+  const [activeCelebration, setActiveCelebration] = useState<VictoryMode | null>(null)
+
 
   const activeCard = SAMPLE_CARDS[selectedCardIndex] ?? SAMPLE_CARDS[0]!
   const cardWithState: Card = { ...activeCard, faceUp: isFaceUp }
@@ -394,27 +397,166 @@ export const AnimationLab: React.FC<AnimationLabProps> = ({ onClose, onTriggerVi
         {/* Section animation de victoire */}
         <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.15)', paddingTop: '0.8rem' }}>
           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '0.4rem' }}>
-            Test Victoire :
+            1. Tester l'animation seule (plein écran) :
           </div>
-          <button
-            type="button"
-            onClick={onTriggerVictory}
-            style={{
-              width: '100%',
-              minHeight: '40px',
-              backgroundColor: 'rgba(255, 255, 255, 0.15)',
-              color: '#fff',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: '6px',
-              fontWeight: 700,
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-            }}
-          >
-            Déclencher l'écran de victoire
-          </button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.35rem', marginBottom: '0.8rem' }}>
+            <button
+              type="button"
+              onClick={() => setActiveCelebration('fireworks-comics')}
+              style={{
+                minHeight: '36px',
+                backgroundColor: activeCelebration === 'fireworks-comics' ? 'var(--highlight-color)' : 'rgba(255, 255, 255, 0.15)',
+                color: activeCelebration === 'fireworks-comics' ? '#111' : '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+              }}
+            >
+              Comics Pop
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveCelebration('fireworks-classic')}
+              style={{
+                minHeight: '36px',
+                backgroundColor: activeCelebration === 'fireworks-classic' ? 'var(--highlight-color)' : 'rgba(255, 255, 255, 0.15)',
+                color: activeCelebration === 'fireworks-classic' ? '#111' : '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+              }}
+            >
+              Classiques
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveCelebration('confetti')}
+              style={{
+                minHeight: '36px',
+                backgroundColor: activeCelebration === 'confetti' ? 'var(--highlight-color)' : 'rgba(255, 255, 255, 0.15)',
+                color: activeCelebration === 'confetti' ? '#111' : '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+              }}
+            >
+              Confettis
+            </button>
+          </div>
+
+          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '0.4rem' }}>
+            2. Tester dans l'écran de victoire du jeu :
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.35rem' }}>
+            <button
+              type="button"
+              onClick={() => onTriggerVictory?.('fireworks-comics')}
+              style={{
+                minHeight: '36px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#fff',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '0.72rem',
+                cursor: 'pointer',
+              }}
+            >
+              + Comics Pop
+            </button>
+            <button
+              type="button"
+              onClick={() => onTriggerVictory?.('fireworks-classic')}
+              style={{
+                minHeight: '36px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#fff',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '0.72rem',
+                cursor: 'pointer',
+              }}
+            >
+              + Classiques
+            </button>
+            <button
+              type="button"
+              onClick={() => onTriggerVictory?.('confetti')}
+              style={{
+                minHeight: '36px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#fff',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '0.72rem',
+                cursor: 'pointer',
+              }}
+            >
+              + Confettis
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const modes: VictoryMode[] = ['fireworks-comics', 'fireworks-classic', 'confetti']
+                const rand = modes[Math.floor(Math.random() * modes.length)] ?? 'fireworks-comics'
+                onTriggerVictory?.(rand)
+              }}
+              style={{
+                minHeight: '36px',
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                color: 'var(--highlight-color)',
+                border: '1px solid var(--highlight-color)',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.72rem',
+                cursor: 'pointer',
+              }}
+            >
+              🎲 Aléatoire
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Rendu plein écran de l'animation de fête active */}
+      {activeCelebration && (
+        <>
+          <VictoryCelebration
+            mode={activeCelebration}
+            onClose={() => setActiveCelebration(null)}
+          />
+          <button
+            type="button"
+            onClick={() => setActiveCelebration(null)}
+            style={{
+              position: 'fixed',
+              top: 'calc(1rem + env(safe-area-inset-top, 0px))',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1000,
+              padding: '0.5rem 1.2rem',
+              backgroundColor: 'rgba(0, 0, 0, 0.85)',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              borderRadius: '20px',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            Arrêter la fête (ou cliquer l'écran)
+          </button>
+        </>
+      )}
     </div>
   )
 }
