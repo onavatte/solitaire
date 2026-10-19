@@ -96,8 +96,8 @@ body {
     transform: scale(0.6);
     opacity: 1;
   }
-  25% {
-    opacity: 0.8;
+  12% {
+    opacity: 0.6;
   }
   100% {
     transform: scale(3.8);
