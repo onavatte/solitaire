@@ -21,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({ moves, elapsedMs, score }) => {
         alignItems: 'center',
         justifyContent: 'center',
         gap: '1.2rem',
-        padding: 'calc(0.4rem + env(safe-area-inset-top, 0px)) 1rem 0.2rem',
+        padding: 'calc(0.5rem + env(safe-area-inset-top, 0px)) 1rem 0.5rem',
         fontSize: '0.85rem',
         fontWeight: 600,
         color: 'var(--felt-text)',
