@@ -53,7 +53,7 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Auto-déplacement vers les fondations (montée automatique en fondation des cartes sécurisées / évidentes au fil du jeu)
 - [x] Système de score en points (règles de score Klondike standard, affichage en jeu et records dans les statistiques)
 - [x] Corriger le bug intermittent de score affiché à `NaN` au démarrage (initialisation / reprise depuis le localStorage)
-- [ ] Retravailler l'icône / favicon de l'application pour un meilleur rendu sur Android (marges de sécurité pour icône adaptative / maskable)
+- [x] Retravailler l'icône / favicon de l'application pour un meilleur rendu sur Android (marges de sécurité pour icône adaptative / maskable)
 
 ## Idées pour plus tard (v2)
 - Mode gaucher
