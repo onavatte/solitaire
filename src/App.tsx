@@ -233,8 +233,10 @@ export default function App() {
         }
       />
 
-      {/* Bouton d'autocomplétion quand la victoire est assurée */}
-      {canAutocomplete && game.status === 'playing' && (
+      {/* Bouton d'autocomplétion quand la victoire est assurée et que l'auto-déplacement est désactivé */}
+      {canAutocomplete &&
+        game.status === 'playing' &&
+        preferences.autoFoundationMode === 'disabled' && (
         <div
           style={{
             position: 'fixed',
