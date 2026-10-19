@@ -19,12 +19,14 @@ export function draw(state: GameState): GameState {
       .reverse()
       .map((c) => ({ ...c, faceUp: true }))
 
+    const currentScore = Number.isFinite(state.score) ? Math.max(0, state.score) : 0
+
     return {
       ...state,
       stock: newStock,
       waste: [...state.waste, ...drawnCards],
       moves: state.moves + 1,
-      score: state.score,
+      score: currentScore,
     }
   }
 
@@ -34,8 +36,9 @@ export function draw(state: GameState): GameState {
       .reverse()
       .map((c) => ({ ...c, faceUp: false }))
 
+    const currentScore = Number.isFinite(state.score) ? Math.max(0, state.score) : 0
     const penalty = state.drawCount === 1 ? 100 : 20
-    const newScore = Math.max(0, state.score - penalty)
+    const newScore = Math.max(0, currentScore - penalty)
 
     return {
       ...state,
@@ -206,7 +209,8 @@ export function moveCards(
   }
 
   const won = isGameWon({ foundations: newFoundations })
-  const newScore = Math.max(0, state.score + scoreDelta)
+  const currentScore = Number.isFinite(state.score) ? Math.max(0, state.score) : 0
+  const newScore = Math.max(0, currentScore + scoreDelta)
 
   return {
     ...state,

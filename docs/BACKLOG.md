@@ -52,7 +52,7 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] *Smart auto-move* sur simple clic (envoi direct sur le meilleur emplacement au lieu du double-clic, avec option dans les réglages)
 - [x] Auto-déplacement vers les fondations (montée automatique en fondation des cartes sécurisées / évidentes au fil du jeu)
 - [x] Système de score en points (règles de score Klondike standard, affichage en jeu et records dans les statistiques)
-- [ ] Corriger le bug intermittent de score affiché à `NaN` au démarrage (initialisation / reprise depuis le localStorage)
+- [x] Corriger le bug intermittent de score affiché à `NaN` au démarrage (initialisation / reprise depuis le localStorage)
 - [ ] Retravailler l'icône / favicon de l'application pour un meilleur rendu sur Android (marges de sécurité pour icône adaptative / maskable)
 
 ## Idées pour plus tard (v2)

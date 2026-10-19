@@ -426,6 +426,21 @@ describe('score Klondike', () => {
     const next = draw(state)
     expect(next.score).toBe(30) // 50 - 20
   })
+
+  it('ne produit pas de NaN si le score initial est indéfini ou corrompu', () => {
+    const ace = makeCard('hearts', 1)
+    const state = createEmptyState({
+      waste: [ace],
+      score: undefined as unknown as number,
+    })
+    const next = moveCards(
+      state,
+      { zone: 'waste' },
+      { zone: 'foundation', foundationIndex: 0 },
+    )
+    expect(Number.isFinite(next.score)).toBe(true)
+    expect(next.score).toBe(10) // 0 + 10
+  })
 })
 
 

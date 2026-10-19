@@ -85,6 +85,24 @@ function isValidGameState(obj: unknown): obj is GameState {
   )
 }
 
+function sanitizeGameState(state: GameState): GameState {
+  return {
+    ...state,
+    score:
+      typeof state.score === 'number' && Number.isFinite(state.score)
+        ? Math.max(0, state.score)
+        : 0,
+    moves:
+      typeof state.moves === 'number' && Number.isFinite(state.moves)
+        ? Math.max(0, state.moves)
+        : 0,
+    elapsedMs:
+      typeof state.elapsedMs === 'number' && Number.isFinite(state.elapsedMs)
+        ? Math.max(0, state.elapsedMs)
+        : 0,
+  }
+}
+
 export function isValidGameHistory(obj: unknown): obj is GameHistory {
   if (!isObject(obj)) return false
   if (!Array.isArray(obj['past'])) return false
@@ -118,8 +136,12 @@ export function loadSavedGame(): SavedGame | null {
         clearSavedGame()
         return null
       }
+      const history: GameHistory = {
+        past: parsed['history'].past.map((s) => (isValidGameState(s) ? sanitizeGameState(s) : s)),
+        present: sanitizeGameState(parsed['history'].present),
+      }
       return {
-        history: parsed['history'],
+        history,
         hasCountedPlayed: Boolean(parsed['hasCountedPlayed']),
       }
     }
@@ -285,8 +307,9 @@ export function recordGameWon(
     current.bestTimeMs === null ? elapsedMs : Math.min(current.bestTimeMs, elapsedMs)
   const newBestMoves =
     current.bestMoves === null ? moves : Math.min(current.bestMoves, moves)
+  const safeScore = Number.isFinite(score) ? Math.max(0, score) : 0
   const newBestScore =
-    current.bestScore === null ? score : Math.max(current.bestScore, score)
+    current.bestScore === null ? safeScore : Math.max(current.bestScore, safeScore)
 
   const updated: ModeStats = {
     gamesPlayed: Math.max(current.gamesPlayed, newGamesWon),

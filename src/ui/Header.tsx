@@ -12,6 +12,8 @@ export const Header: React.FC<HeaderProps> = ({ moves, elapsedMs, score }) => {
   const seconds = totalSeconds % 60
   const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 
+  const safeScore = Number.isFinite(score) ? score : 0
+
   return (
     <header
       style={{
@@ -39,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({ moves, elapsedMs, score }) => {
         <span style={{ color: 'var(--felt-text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
           Score
         </span>
-        <span style={{ fontWeight: 700, color: 'var(--highlight-color)' }}>{score}</span>
+        <span style={{ fontWeight: 700, color: 'var(--highlight-color)' }}>{safeScore}</span>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>

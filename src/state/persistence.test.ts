@@ -202,5 +202,23 @@ describe('persistence', () => {
       clearSavedGame()
       expect(loadSavedGame()).toBeNull()
     })
+
+    it('assainit et restaure un score à 0 si une ancienne sauvegarde n avait pas de propriété score', () => {
+      const initial = dealGame({ drawCount: 1, seed: 42 })
+      const { score: _unused, ...stateWithoutScore } = initial
+      const rawSaved = {
+        history: {
+          past: [],
+          present: stateWithoutScore,
+        },
+        hasCountedPlayed: true,
+      }
+      localStorage.setItem(STORAGE_KEYS.SAVED_GAME, JSON.stringify(rawSaved))
+
+      const loaded = loadSavedGame()
+      expect(loaded).not.toBeNull()
+      expect(loaded?.history.present.score).toBe(0)
+      expect(Number.isFinite(loaded?.history.present.score)).toBe(true)
+    })
   })
 })
