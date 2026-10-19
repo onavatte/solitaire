@@ -9,7 +9,6 @@ interface OptionsModalProps {
   onChangeDrawCount: (count: DrawCount) => void
   onChangeQuickMoveMode: (mode: QuickMoveMode) => void
   onChangeAutoFoundationMode: (mode: AutoFoundationMode) => void
-  onToggleHaptic: () => void
   onToggleAnimations: () => void
   onOpenLab?: () => void
 }
@@ -21,7 +20,6 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
   onChangeDrawCount,
   onChangeQuickMoveMode,
   onChangeAutoFoundationMode,
-  onToggleHaptic,
   onToggleAnimations,
   onOpenLab,
 }) => {
@@ -155,47 +153,6 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
                 3 cartes
               </button>
             </div>
-          </div>
-
-          {/* 2. Retour haptique */}
-          <div
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.25)',
-              padding: '0.9rem',
-              borderRadius: '8px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '0.8rem',
-            }}
-          >
-            <div>
-              <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Retour haptique</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--felt-text-muted)', marginTop: '0.2rem' }}>
-                Vibrations subtiles lors des coups (mobile)
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={onToggleHaptic}
-              style={{
-                minHeight: '36px',
-                minWidth: '70px',
-                padding: '0.4rem 0.8rem',
-                backgroundColor: preferences.hapticFeedback
-                  ? 'var(--highlight-color)'
-                  : 'rgba(255, 255, 255, 0.15)',
-                color: preferences.hapticFeedback ? '#111' : 'var(--felt-text)',
-                border: 'none',
-                borderRadius: '6px',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-              }}
-            >
-              {preferences.hapticFeedback ? 'Oui' : 'Non'}
-            </button>
           </div>
 
           {/* 3. Animations & transitions */}

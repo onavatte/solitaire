@@ -65,7 +65,6 @@ describe('persistence', () => {
     it('renvoie les préférences par défaut si le storage est vide', () => {
       expect(loadPreferences()).toEqual(getDefaultPreferences())
       expect(loadPreferences().drawCount).toBe(1)
-      expect(loadPreferences().hapticFeedback).toBe(true)
       expect(loadPreferences().disableAnimations).toBe(false)
       expect(loadPreferences().quickMoveMode).toBe('single-tap')
       expect(loadPreferences().autoFoundationMode).toBe('safe')
@@ -74,14 +73,12 @@ describe('persistence', () => {
     it('sauvegarde et charge les préférences correctement', () => {
       savePreferences({
         drawCount: 3,
-        hapticFeedback: false,
         disableAnimations: true,
         quickMoveMode: 'double-tap',
         autoFoundationMode: 'disabled',
       })
       const prefs = loadPreferences()
       expect(prefs.drawCount).toBe(3)
-      expect(prefs.hapticFeedback).toBe(false)
       expect(prefs.disableAnimations).toBe(true)
       expect(prefs.quickMoveMode).toBe('double-tap')
       expect(prefs.autoFoundationMode).toBe('disabled')
@@ -90,11 +87,11 @@ describe('persistence', () => {
     it('permet la mise à jour partielle des préférences', () => {
       savePreferences({ drawCount: 3 })
       expect(loadPreferences().drawCount).toBe(3)
-      expect(loadPreferences().hapticFeedback).toBe(true) // conservé par défaut
+      expect(loadPreferences().disableAnimations).toBe(false) // conservé par défaut
 
-      savePreferences({ hapticFeedback: false })
+      savePreferences({ disableAnimations: true })
       expect(loadPreferences().drawCount).toBe(3) // conservé
-      expect(loadPreferences().hapticFeedback).toBe(false)
+      expect(loadPreferences().disableAnimations).toBe(true)
     })
 
     it('gère les données de préférences corrompues sans crash', () => {

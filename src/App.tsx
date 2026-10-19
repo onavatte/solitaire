@@ -84,16 +84,6 @@ export default function App() {
 
   const drawCount = preferences.drawCount
 
-  const triggerHaptic = (duration = 12) => {
-    if (preferences.hapticFeedback && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-      try {
-        navigator.vibrate(duration)
-      } catch {
-        // Ignoré si non supporté
-      }
-    }
-  }
-
   // Calcul des surbrillances pour l'indice visuel
   const highlightStock = activeHint?.type === 'draw'
   const highlightWaste =
@@ -111,7 +101,6 @@ export default function App() {
       : null
 
   const handleStartNewGame = () => {
-    triggerHaptic(15)
     setIsGameWonDelayed(false)
     setMockWon(false)
     setIsDealing(true)
@@ -121,7 +110,6 @@ export default function App() {
 
   const handleChangeDrawCount = (nextCount: DrawCount) => {
     if (nextCount === preferences.drawCount) return
-    triggerHaptic(15)
     savePreferences({ drawCount: nextCount })
     setPreferences((prev) => ({ ...prev, drawCount: nextCount }))
     setIsDealing(true)
@@ -129,51 +117,20 @@ export default function App() {
     onNewGame({ drawCount: nextCount })
   }
 
-  const handleToggleHaptic = () => {
-    const next = !preferences.hapticFeedback
-    if (next && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-      try {
-        navigator.vibrate(15)
-      } catch {
-        // Ignoré
-      }
-    }
-    savePreferences({ hapticFeedback: next })
-    setPreferences((prev) => ({ ...prev, hapticFeedback: next }))
-  }
-
   const handleToggleAnimations = () => {
     const next = !preferences.disableAnimations
-    triggerHaptic(12)
     savePreferences({ disableAnimations: next })
     setPreferences((prev) => ({ ...prev, disableAnimations: next }))
   }
 
   const handleChangeQuickMoveMode = (mode: QuickMoveMode) => {
-    triggerHaptic(12)
     savePreferences({ quickMoveMode: mode })
     setPreferences((prev) => ({ ...prev, quickMoveMode: mode }))
   }
 
   const handleChangeAutoFoundationMode = (mode: AutoFoundationMode) => {
-    triggerHaptic(12)
     savePreferences({ autoFoundationMode: mode })
     setPreferences((prev) => ({ ...prev, autoFoundationMode: mode }))
-  }
-
-  const handleStockClickWithHaptic = () => {
-    triggerHaptic(10)
-    onStockClick()
-  }
-
-  const handleMoveCardsWithHaptic: typeof onMoveCards = (from, to) => {
-    triggerHaptic(14)
-    onMoveCards(from, to)
-  }
-
-  const handleQuickMoveWithHaptic: typeof onQuickMoveToFoundation = (from) => {
-    triggerHaptic(14)
-    onQuickMoveToFoundation(from)
   }
 
   // Clic/Tap : coup rapide intelligent si single-tap, ou sélection classique
@@ -181,11 +138,10 @@ export default function App() {
     if (preferences.quickMoveMode === 'single-tap' && !selectedLocation) {
       const autoTarget = findAutoMove(game, location)
       if (autoTarget) {
-        handleMoveCardsWithHaptic(location, autoTarget)
+        onMoveCards(location, autoTarget)
         return
       }
     }
-    triggerHaptic(10)
     onSelectOrMove(location)
   }
 
@@ -208,18 +164,18 @@ export default function App() {
       <Board
         state={game}
         dealId={dealId}
-        onStockClick={handleStockClickWithHaptic}
+        onStockClick={onStockClick}
         onWasteClick={() => handleCardClickWithSmartMove({ zone: 'waste' })}
-        onWasteDoubleClick={() => handleQuickMoveWithHaptic({ zone: 'waste' })}
+        onWasteDoubleClick={() => onQuickMoveToFoundation({ zone: 'waste' })}
         onFoundationClick={(fIndex) => onSelectOrMove({ zone: 'foundation', foundationIndex: fIndex })}
         onTableauCardClick={(col, cardIndex) => {
           handleCardClickWithSmartMove({ zone: 'tableau', column: col, cardIndex })
         }}
         onTableauCardDoubleClick={(col, cardIndex) => {
-          handleQuickMoveWithHaptic({ zone: 'tableau', column: col, cardIndex })
+          onQuickMoveToFoundation({ zone: 'tableau', column: col, cardIndex })
         }}
         onTableauEmptyClick={(col) => onSelectOrMove({ zone: 'tableau', column: col })}
-        onDropMove={handleMoveCardsWithHaptic}
+        onDropMove={onMoveCards}
         highlightStock={highlightStock}
         highlightWaste={highlightWaste}
         highlightFoundationIndex={highlightFoundationIndex}
@@ -407,7 +363,6 @@ export default function App() {
         onChangeDrawCount={handleChangeDrawCount}
         onChangeQuickMoveMode={handleChangeQuickMoveMode}
         onChangeAutoFoundationMode={handleChangeAutoFoundationMode}
-        onToggleHaptic={handleToggleHaptic}
         onToggleAnimations={handleToggleAnimations}
         onOpenLab={() => setIsLabOpen(true)}
       />

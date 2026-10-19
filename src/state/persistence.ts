@@ -21,7 +21,6 @@ export type AutoFoundationMode = 'safe' | 'disabled'
 
 export interface UserPreferences {
   readonly drawCount: DrawCount
-  readonly hapticFeedback: boolean
   readonly disableAnimations: boolean
   readonly quickMoveMode: QuickMoveMode
   readonly autoFoundationMode: AutoFoundationMode
@@ -58,7 +57,6 @@ export function getDefaultStats(): GameStats {
 export function getDefaultPreferences(): UserPreferences {
   return {
     drawCount: 1,
-    hapticFeedback: true,
     disableAnimations: false,
     quickMoveMode: 'single-tap',
     autoFoundationMode: 'safe',
@@ -193,10 +191,6 @@ export function loadPreferences(): UserPreferences {
       parsed['drawCount'] === 1 || parsed['drawCount'] === 3
         ? parsed['drawCount']
         : defaults.drawCount
-    const hapticFeedback =
-      typeof parsed['hapticFeedback'] === 'boolean'
-        ? parsed['hapticFeedback']
-        : defaults.hapticFeedback
     const disableAnimations =
       typeof parsed['disableAnimations'] === 'boolean'
         ? parsed['disableAnimations']
@@ -210,7 +204,7 @@ export function loadPreferences(): UserPreferences {
         ? parsed['autoFoundationMode']
         : defaults.autoFoundationMode
 
-    return { drawCount, hapticFeedback, disableAnimations, quickMoveMode, autoFoundationMode }
+    return { drawCount, disableAnimations, quickMoveMode, autoFoundationMode }
   } catch {
     return defaults
   }
