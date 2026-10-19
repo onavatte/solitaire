@@ -62,11 +62,23 @@ export const Board: React.FC<BoardProps> = ({
   const [activePulses, setActivePulses] = React.useState<ActivePulse[]>([])
   const prevFoundationsRef = React.useRef(state.foundations)
   const pulseIdRef = React.useRef(0)
+  const pendingTimersRef = React.useRef<Set<number>>(new Set())
+
+  // Nettoyage de tous les timers d'ondes au démontage du composant
+  React.useEffect(() => {
+    const timers = pendingTimersRef.current
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer))
+      timers.clear()
+    }
+  }, [])
 
   // Détection de l'arrivée d'une nouvelle carte en fondation pour déclencher l'onde visuelle
   React.useEffect(() => {
     if (disableAnimations) {
       prevFoundationsRef.current = state.foundations
+      pendingTimersRef.current.forEach((timer) => clearTimeout(timer))
+      pendingTimersRef.current.clear()
       return
     }
 
@@ -76,6 +88,8 @@ export const Board: React.FC<BoardProps> = ({
 
     // Ne pas animer lors du chargement initial ou réinitialisation
     if (state.moves === 0) {
+      pendingTimersRef.current.forEach((timer) => clearTimeout(timer))
+      pendingTimersRef.current.clear()
       return
     }
 
@@ -96,10 +110,17 @@ export const Board: React.FC<BoardProps> = ({
     })
 
     if (newPulses.length > 0) {
-      const timer = setTimeout(() => {
-        setActivePulses((current) => [...current, ...newPulses])
+      const timer = window.setTimeout(() => {
+        pendingTimersRef.current.delete(timer)
+        setActivePulses((current) => {
+          const newIndices = new Set(newPulses.map((p) => p.foundationIndex))
+          return [
+            ...current.filter((p) => !newIndices.has(p.foundationIndex)),
+            ...newPulses,
+          ]
+        })
       }, 100)
-      return () => clearTimeout(timer)
+      pendingTimersRef.current.add(timer)
     }
   }, [state.foundations, state.moves, disableAnimations])
 
