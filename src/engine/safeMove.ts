@@ -59,6 +59,8 @@ export interface FoundationMoveCandidate {
   rank: number
 }
 
+export type FoundationAutoMoveMode = 'safe' | 'all'
+
 /**
  * Recherche le prochain coup automatique sécurisé vers les fondations.
  * Examine le sommet des 7 colonnes du tableau et le sommet de la défausse.
@@ -67,6 +69,7 @@ export interface FoundationMoveCandidate {
  */
 export function findNextSafeFoundationMove(
   state: GameState,
+  mode: FoundationAutoMoveMode = 'safe',
 ): { from: Location; to: Location } | null {
   if (state.status === 'won') {
     return null
@@ -86,7 +89,7 @@ export function findNextSafeFoundationMove(
 
     for (let f = 0; f < state.foundations.length; f++) {
       const to: Location = { zone: 'foundation', foundationIndex: f }
-      if (canMove(state, from, to) && isSafeFoundationMove(topCard, state.foundations)) {
+      if (canMove(state, from, to) && (mode === 'all' || isSafeFoundationMove(topCard, state.foundations))) {
         candidates.push({ from, to, rank: topCard.rank })
       }
     }
@@ -99,7 +102,7 @@ export function findNextSafeFoundationMove(
       const from: Location = { zone: 'waste' }
       for (let f = 0; f < state.foundations.length; f++) {
         const to: Location = { zone: 'foundation', foundationIndex: f }
-        if (canMove(state, from, to) && isSafeFoundationMove(topWaste, state.foundations)) {
+        if (canMove(state, from, to) && (mode === 'all' || isSafeFoundationMove(topWaste, state.foundations))) {
           candidates.push({ from, to, rank: topWaste.rank })
         }
       }

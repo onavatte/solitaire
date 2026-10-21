@@ -14,7 +14,7 @@ import {
   recordMove,
   undo,
 } from '../engine'
-import type { GameStats } from './persistence'
+import type { AutoFoundationMode, GameStats } from './persistence'
 import {
   clearSavedGame,
   loadPreferences,
@@ -48,7 +48,7 @@ export type GameAction =
   | { type: 'START_AUTOCOMPLETE' }
   | { type: 'STOP_AUTOCOMPLETE' }
   | { type: 'AUTOCOMPLETE_STEP' }
-  | { type: 'SAFE_FOUNDATION_STEP' }
+  | { type: 'SAFE_FOUNDATION_STEP'; mode?: AutoFoundationMode }
   | { type: 'TICK_TIME'; deltaMs: number }
   | { type: 'SET_PAUSED'; isPaused: boolean }
   | { type: 'RESET_STATS' }
@@ -229,7 +229,8 @@ export function gameReducer(state: GameStoreState, action: GameAction): GameStor
       ) {
         return state
       }
-      const move = findNextSafeFoundationMove(state.history.present)
+      const foundationMode = action.mode === 'all' ? 'all' : 'safe'
+      const move = findNextSafeFoundationMove(state.history.present, foundationMode)
       if (!move) {
         return state
       }
@@ -279,13 +280,15 @@ export function gameReducer(state: GameStoreState, action: GameAction): GameStor
 
 export interface UseGameConfig {
   readonly autoFoundationEnabled?: boolean
+  readonly autoFoundationMode?: AutoFoundationMode
   readonly isDealing?: boolean
 }
 
 export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
   const [store, dispatch] = useReducer(gameReducer, initialOptions, createInitialStore)
   const game = store.history.present
-  const autoFoundationEnabled = config?.autoFoundationEnabled ?? true
+  const autoFoundationMode =
+    config?.autoFoundationMode ?? (config?.autoFoundationEnabled === false ? 'disabled' : 'safe')
   const isDealing = config?.isDealing ?? false
 
   // Chronomètre : s'incrémente chaque seconde dès le premier coup, en pause en arrière-plan
@@ -323,10 +326,10 @@ export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
     return () => clearTimeout(timer)
   }, [store.isAutocompleting, game])
 
-  // Cadencement automatique de la montée des cartes sûres vers les fondations
+  // Cadencement automatique de la montée des cartes vers les fondations
   useEffect(() => {
     if (
-      !autoFoundationEnabled ||
+      autoFoundationMode === 'disabled' ||
       !store.allowAutoFoundation ||
       isDealing ||
       store.isAutocompleting ||
@@ -336,18 +339,19 @@ export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
       return
     }
 
-    const move = findNextSafeFoundationMove(game)
+    const foundationMode = autoFoundationMode === 'all' ? 'all' : 'safe'
+    const move = findNextSafeFoundationMove(game, foundationMode)
     if (!move) {
       return
     }
 
     const timer = setTimeout(() => {
-      dispatch({ type: 'SAFE_FOUNDATION_STEP' })
+      dispatch({ type: 'SAFE_FOUNDATION_STEP', mode: autoFoundationMode })
     }, 180)
 
     return () => clearTimeout(timer)
   }, [
-    autoFoundationEnabled,
+    autoFoundationMode,
     store.allowAutoFoundation,
     isDealing,
     store.isAutocompleting,

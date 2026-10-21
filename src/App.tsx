@@ -59,7 +59,7 @@ export default function App() {
     onNewGame,
     onResetStats,
   } = useGame(undefined, {
-    autoFoundationEnabled: preferences.autoFoundationMode === 'safe',
+    autoFoundationMode: preferences.autoFoundationMode,
     isDealing,
   })
 

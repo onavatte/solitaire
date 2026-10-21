@@ -161,5 +161,37 @@ describe('findNextSafeFoundationMove', () => {
     }
     expect(findNextSafeFoundationMove(game)).toBeNull()
   })
+
+  it('autorise une carte non sûre en mode all alors qu elle est refusée en mode safe', () => {
+    // 3 de pique avec 2 de pique en fondation, mais aucune carte rouge en fondation
+    const game: GameState = {
+      ...makeEmptyGame(),
+      foundations: [
+        [makeCard('spades', 1), makeCard('spades', 2)],
+        [],
+        [],
+        [],
+      ],
+      tableau: [
+        [makeCard('spades', 3)],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+      ],
+    }
+
+    // En mode safe : refusé car les cartes rouges ne sont pas à 2
+    expect(findNextSafeFoundationMove(game, 'safe')).toBeNull()
+
+    // En mode all : accepté car le coup est légal
+    const move = findNextSafeFoundationMove(game, 'all')
+    expect(move).toEqual({
+      from: { zone: 'tableau', column: 0 },
+      to: { zone: 'foundation', foundationIndex: 0 },
+    })
+  })
 })
 

@@ -280,9 +280,29 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
                 marginBottom: '0.6rem',
               }}
             >
-              Envoie automatiquement les As, 2 et cartes sans risque tactique.
+              Envoie automatiquement les cartes jouables, les cartes sans risque ou désactive la montée.
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem' }}>
+              <button
+                type="button"
+                onClick={() => onChangeAutoFoundationMode('all')}
+                style={{
+                  minHeight: '40px',
+                  padding: '0.4rem',
+                  backgroundColor:
+                    preferences.autoFoundationMode === 'all'
+                      ? 'var(--highlight-color)'
+                      : 'rgba(255, 255, 255, 0.1)',
+                  color: preferences.autoFoundationMode === 'all' ? '#111' : 'var(--felt-text)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Toutes
+              </button>
               <button
                 type="button"
                 onClick={() => onChangeAutoFoundationMode('safe')}
@@ -297,11 +317,11 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
                   border: 'none',
                   borderRadius: '6px',
                   fontWeight: 700,
-                  fontSize: '0.85rem',
+                  fontSize: '0.8rem',
                   cursor: 'pointer',
                 }}
               >
-                Cartes sûres
+                Sûres
               </button>
               <button
                 type="button"
@@ -317,7 +337,7 @@ export const OptionsModal: React.FC<OptionsModalProps> = ({
                   border: 'none',
                   borderRadius: '6px',
                   fontWeight: 700,
-                  fontSize: '0.85rem',
+                  fontSize: '0.8rem',
                   cursor: 'pointer',
                 }}
               >

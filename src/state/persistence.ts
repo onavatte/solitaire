@@ -17,7 +17,7 @@ export interface GameStats {
 
 export type QuickMoveMode = 'single-tap' | 'double-tap'
 
-export type AutoFoundationMode = 'safe' | 'disabled'
+export type AutoFoundationMode = 'all' | 'safe' | 'disabled'
 
 export interface UserPreferences {
   readonly drawCount: DrawCount
@@ -200,7 +200,9 @@ export function loadPreferences(): UserPreferences {
         ? parsed['quickMoveMode']
         : defaults.quickMoveMode
     const autoFoundationMode: AutoFoundationMode =
-      parsed['autoFoundationMode'] === 'safe' || parsed['autoFoundationMode'] === 'disabled'
+      parsed['autoFoundationMode'] === 'all' ||
+      parsed['autoFoundationMode'] === 'safe' ||
+      parsed['autoFoundationMode'] === 'disabled'
         ? parsed['autoFoundationMode']
         : defaults.autoFoundationMode
 

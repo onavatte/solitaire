@@ -57,7 +57,7 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Empêcher la montée automatique des As vers les fondations juste après la donne initiale (`game.moves === 0`)
 - [x] Ralentir la vitesse de déplacement des cartes (~280 ms) et la cadence de l'autocomplétion (~240 ms)
 - [x] Synchroniser l'onde d'enseigne avec l'atterrissage effectif de la carte (éviter l'effet sous la carte)
-- [ ] Clarifier / affiner l'auto-déplacement vers les fondations (règle des cartes sûres vs toutes les cartes jouables)
+- [x] Option 3 modes pour l'auto-déplacement vers les fondations (Toutes les cartes, Cartes sûres, Désactivé)
 
 ## Jalon 5 — Audio & Sound Design (qualité App Store)
 - [ ] Moteur audio Web Audio API (latence nulle 0 ms, AudioBuffer, mise en cache PWA hors-ligne)

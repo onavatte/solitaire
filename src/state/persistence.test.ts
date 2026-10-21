@@ -75,13 +75,13 @@ describe('persistence', () => {
         drawCount: 3,
         disableAnimations: true,
         quickMoveMode: 'double-tap',
-        autoFoundationMode: 'disabled',
+        autoFoundationMode: 'all',
       })
       const prefs = loadPreferences()
       expect(prefs.drawCount).toBe(3)
       expect(prefs.disableAnimations).toBe(true)
       expect(prefs.quickMoveMode).toBe('double-tap')
-      expect(prefs.autoFoundationMode).toBe('disabled')
+      expect(prefs.autoFoundationMode).toBe('all')
     })
 
     it('permet la mise à jour partielle des préférences', () => {
