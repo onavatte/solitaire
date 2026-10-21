@@ -20,6 +20,7 @@ Journal des décisions techniques (ADR allégé). Les plus récentes en bas.
 | 2026-10-15 | **Cartes : en-tête horizontal & figures SVG stylisées** | Rang + enseigne alignés en haut à gauche pour visibilité en cascade mobile ; figures V, D, R en SVG monochrome stylisé (`currentColor`) sans symétrie inverse ; grand symbole décalé vers le bas (cartes 1–10) ; suppression du coin inférieur droit redondant. |
 | 2026-10-16 | **Persistance localStorage & Stats distinctes** | Sauvegarde continue de l'historique de partie en cours (avec pile d'annulation) dès le 1er coup ; suppression automatique à la victoire ou nouvelle donne ; mémorisation du mode de pioche ; statistiques cloisonnées par mode (1 carte vs 3 cartes) pour préserver la pertinence des records (temps/coups/streaks). |
 | 2026-10-16 | **Animations natives FLIP + CSS (Option A)** | Choix des animations GPU pures sans bibliothèque (`useFlipAnimation`, keyframes CSS de distribution et révélation, snap-back fluide au drag) pour préserver un bundle léger (0 ko ajouté) et 60 fps constants sur mobile. |
+| 2026-10-21 | **Auto-fondation (3 modes : Toutes, Sûres, Désactivé) & temporisation** | Mode 'all' (cascade continue sans blocage), 'safe' (protection Safe Play stricte à partir du rang 3) et 'disabled' ; vol FLIP adouci à 280 ms, autocomplétion à 240 ms et jaillissement d'onde synchronisé à l'atterrissage (260 ms) ; non-déclenchement à la donne initiale (`moves === 0`) pour laisser le joueur découvrir son jeu. |
 
 ## Stratégie d'usage des modèles IA
 | Phase | Modèle conseillé |
