@@ -54,6 +54,18 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Système de score en points (règles de score Klondike standard, affichage en jeu et records dans les statistiques)
 - [x] Corriger le bug intermittent de score affiché à `NaN` au démarrage (initialisation / reprise depuis le localStorage)
 - [x] Retravailler l'icône / favicon de l'application pour un meilleur rendu sur Android (marges de sécurité pour icône adaptative / maskable)
+- [x] Empêcher la montée automatique des As vers les fondations juste après la donne initiale (`game.moves === 0`)
+- [ ] Ralentir la vitesse de déplacement des cartes (~280 ms) et la cadence de l'autocomplétion (~220 ms)
+- [ ] Synchroniser l'onde d'enseigne avec l'atterrissage effectif de la carte (éviter l'effet sous la carte)
+- [ ] Clarifier / affiner l'auto-déplacement vers les fondations (règle des cartes sûres vs toutes les cartes jouables)
+
+## Jalon 5 — Audio & Sound Design (qualité App Store)
+- [ ] Moteur audio Web Audio API (latence nulle 0 ms, AudioBuffer, mise en cache PWA hors-ligne)
+- [ ] Bruitages tactiles de cartes (prise / glissement sur feutrine, dépôt / claquement feutré, retournement)
+- [ ] Effet mélodique d'arrivée en fondation (gamme ascendante gratifiante de l'As au Roi)
+- [ ] Sons de distribution initiale (battement / riffle shuffle) et de célébration de victoire
+- [ ] Musique d'ambiance d'arrière-plan (boucle jazz / lofi détendue)
+- [ ] Réglages audio dans la modale d'Options (interrupteurs indépendants pour Bruitages ON/OFF et Musique ON/OFF)
 
 ## Idées pour plus tard (v2)
 - Mode gaucher

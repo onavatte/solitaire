@@ -126,7 +126,7 @@ function applyGameMove(
   }
 }
 
-function gameReducer(state: GameStoreState, action: GameAction): GameStoreState {
+export function gameReducer(state: GameStoreState, action: GameAction): GameStoreState {
   switch (action.type) {
     case 'DRAW': {
       const nextGame = draw(state.history.present)
@@ -222,7 +222,11 @@ function gameReducer(state: GameStoreState, action: GameAction): GameStoreState 
     }
 
     case 'SAFE_FOUNDATION_STEP': {
-      if (state.isAutocompleting || state.history.present.status !== 'playing') {
+      if (
+        state.isAutocompleting ||
+        state.history.present.status !== 'playing' ||
+        state.history.present.moves === 0
+      ) {
         return state
       }
       const move = findNextSafeFoundationMove(state.history.present)
@@ -326,7 +330,8 @@ export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
       !store.allowAutoFoundation ||
       isDealing ||
       store.isAutocompleting ||
-      game.status !== 'playing'
+      game.status !== 'playing' ||
+      game.moves === 0
     ) {
       return
     }
