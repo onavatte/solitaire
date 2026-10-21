@@ -60,7 +60,7 @@ export function useFlipAnimation(
       return
     }
 
-    const duration = options.duration ?? 200
+    const duration = options.duration ?? 280
 
     // Pour chaque carte qui a bougé, animer de l'ancienne vers la nouvelle position
     cardElements.forEach((el) => {
@@ -91,7 +91,7 @@ export function useFlipAnimation(
 
           // Play : animer vers (0, 0)
           requestAnimationFrame(() => {
-            el.style.transition = `transform ${duration}ms cubic-bezier(0.2, 0.85, 0.25, 1)`
+            el.style.transition = `transform ${duration}ms cubic-bezier(0.25, 0.9, 0.3, 1)`
             el.style.transform = 'translate3d(0, 0, 0)'
 
             const cleanup = () => {

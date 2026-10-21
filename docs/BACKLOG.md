@@ -55,8 +55,8 @@ Légende : `[x]` fait, `[ ]` à faire.
 - [x] Corriger le bug intermittent de score affiché à `NaN` au démarrage (initialisation / reprise depuis le localStorage)
 - [x] Retravailler l'icône / favicon de l'application pour un meilleur rendu sur Android (marges de sécurité pour icône adaptative / maskable)
 - [x] Empêcher la montée automatique des As vers les fondations juste après la donne initiale (`game.moves === 0`)
-- [ ] Ralentir la vitesse de déplacement des cartes (~280 ms) et la cadence de l'autocomplétion (~220 ms)
-- [ ] Synchroniser l'onde d'enseigne avec l'atterrissage effectif de la carte (éviter l'effet sous la carte)
+- [x] Ralentir la vitesse de déplacement des cartes (~280 ms) et la cadence de l'autocomplétion (~240 ms)
+- [x] Synchroniser l'onde d'enseigne avec l'atterrissage effectif de la carte (éviter l'effet sous la carte)
 - [ ] Clarifier / affiner l'auto-déplacement vers les fondations (règle des cartes sûres vs toutes les cartes jouables)
 
 ## Jalon 5 — Audio & Sound Design (qualité App Store)

@@ -119,7 +119,7 @@ export const Board: React.FC<BoardProps> = ({
             ...newPulses,
           ]
         })
-      }, 100)
+      }, 260)
       pendingTimersRef.current.add(timer)
     }
   }, [state.foundations, state.moves, disableAnimations])
@@ -252,6 +252,7 @@ export const Board: React.FC<BoardProps> = ({
                 {topCard && (
                   <div
                     data-card-id={topCard.id}
+                    data-base-z-index={2}
                     onPointerDown={(e) =>
                       handlePointerDown(
                         e,

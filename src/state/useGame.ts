@@ -310,7 +310,7 @@ export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [])
 
-  // Cadencement automatique de l'autocomplétion (1 coup toutes les 100 ms)
+  // Cadencement automatique de l'autocomplétion (1 coup toutes les 240 ms)
   useEffect(() => {
     if (!store.isAutocompleting || game.status !== 'playing') {
       return
@@ -318,7 +318,7 @@ export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
 
     const timer = setTimeout(() => {
       dispatch({ type: 'AUTOCOMPLETE_STEP' })
-    }, 100)
+    }, 240)
 
     return () => clearTimeout(timer)
   }, [store.isAutocompleting, game])
