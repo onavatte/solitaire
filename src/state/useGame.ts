@@ -9,6 +9,7 @@ import {
   findAutoMove,
   findHint,
   findNextSafeFoundationMove,
+  getMovingCards,
   initHistory,
   moveCards,
   recordMove,
@@ -35,6 +36,7 @@ export interface GameStoreState {
   readonly hasCountedPlayed: boolean
   readonly stats: GameStats
   readonly allowAutoFoundation: boolean
+  readonly pulledFromFoundationIds: readonly string[]
 }
 
 export type GameAction =
@@ -71,6 +73,7 @@ function createInitialStore(options?: DealOptions): GameStoreState {
       hasCountedPlayed: saved.hasCountedPlayed,
       stats,
       allowAutoFoundation: true,
+      pulledFromFoundationIds: saved.pulledFromFoundationIds ?? [],
     }
   }
 
@@ -84,6 +87,7 @@ function createInitialStore(options?: DealOptions): GameStoreState {
     hasCountedPlayed: false,
     stats,
     allowAutoFoundation: true,
+    pulledFromFoundationIds: [],
   }
 }
 
@@ -134,8 +138,31 @@ export function gameReducer(state: GameStoreState, action: GameAction): GameStor
     }
 
     case 'MOVE_CARDS': {
+      let updatedPulledIds = state.pulledFromFoundationIds
+
+      // 1. Si une carte est retirée d'une fondation, l'enregistrer dans les exceptions d'auto-fondation
+      if (action.from.zone === 'foundation') {
+        const sourcePile = state.history.present.foundations[action.from.foundationIndex]
+        const pulledCard = sourcePile?.[sourcePile.length - 1]
+        if (pulledCard && !updatedPulledIds.includes(pulledCard.id)) {
+          updatedPulledIds = [...updatedPulledIds, pulledCard.id]
+        }
+      }
+
+      // 2. Si une carte retourne en fondation, la retirer des exceptions
+      if (action.to.zone === 'foundation') {
+        const moving = getMovingCards(state.history.present, action.from)
+        if (moving && moving.length > 0) {
+          const movedIds = new Set(moving.map((c) => c.id))
+          updatedPulledIds = updatedPulledIds.filter((id) => !movedIds.has(id))
+        }
+      }
+
       const nextGame = moveCards(state.history.present, action.from, action.to)
-      return applyGameMove(state, nextGame)
+      return {
+        ...applyGameMove(state, nextGame),
+        pulledFromFoundationIds: updatedPulledIds,
+      }
     }
 
     case 'SELECT_LOCATION': {
@@ -187,6 +214,7 @@ export function gameReducer(state: GameStoreState, action: GameAction): GameStor
         hasCountedPlayed: false,
         stats: state.stats,
         allowAutoFoundation: true,
+        pulledFromFoundationIds: [],
       }
     }
 
@@ -230,7 +258,11 @@ export function gameReducer(state: GameStoreState, action: GameAction): GameStor
         return state
       }
       const foundationMode = action.mode === 'all' ? 'all' : 'safe'
-      const move = findNextSafeFoundationMove(state.history.present, foundationMode)
+      const move = findNextSafeFoundationMove(
+        state.history.present,
+        foundationMode,
+        state.pulledFromFoundationIds,
+      )
       if (!move) {
         return state
       }
@@ -340,7 +372,7 @@ export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
     }
 
     const foundationMode = autoFoundationMode === 'all' ? 'all' : 'safe'
-    const move = findNextSafeFoundationMove(game, foundationMode)
+    const move = findNextSafeFoundationMove(game, foundationMode, store.pulledFromFoundationIds)
     if (!move) {
       return
     }
@@ -353,6 +385,7 @@ export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
   }, [
     autoFoundationMode,
     store.allowAutoFoundation,
+    store.pulledFromFoundationIds,
     isDealing,
     store.isAutocompleting,
     game,
@@ -409,11 +442,12 @@ export function useGame(initialOptions?: DealOptions, config?: UseGameConfig) {
       saveCurrentGame({
         history: store.history,
         hasCountedPlayed: store.hasCountedPlayed,
+        pulledFromFoundationIds: store.pulledFromFoundationIds,
       })
     } else if (store.history.present.status === 'won') {
       clearSavedGame()
     }
-  }, [store.history, store.hasCountedPlayed])
+  }, [store.history, store.hasCountedPlayed, store.pulledFromFoundationIds])
 
   return {
     game,

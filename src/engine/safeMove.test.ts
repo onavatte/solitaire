@@ -193,5 +193,19 @@ describe('findNextSafeFoundationMove', () => {
       to: { zone: 'foundation', foundationIndex: 0 },
     })
   })
+
+  it('ignore les cartes spécifiées dans excludedCardIds (cartes redescendues manuellement)', () => {
+    const ace = makeCard('spades', 1)
+    const game: GameState = {
+      ...makeEmptyGame(),
+      tableau: [[ace], [], [], [], [], [], []],
+    }
+
+    // Sans exclusion, l'As monte
+    expect(findNextSafeFoundationMove(game, 'all')).not.toBeNull()
+
+    // Avec exclusion de l'As, aucun coup n'est proposé
+    expect(findNextSafeFoundationMove(game, 'all', [ace.id])).toBeNull()
+  })
 })
 

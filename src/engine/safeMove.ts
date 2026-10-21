@@ -70,11 +70,13 @@ export type FoundationAutoMoveMode = 'safe' | 'all'
 export function findNextSafeFoundationMove(
   state: GameState,
   mode: FoundationAutoMoveMode = 'safe',
+  excludedCardIds?: readonly string[],
 ): { from: Location; to: Location } | null {
   if (state.status === 'won') {
     return null
   }
 
+  const excludedSet = excludedCardIds && excludedCardIds.length > 0 ? new Set(excludedCardIds) : null
   const candidates: FoundationMoveCandidate[] = []
 
   // 1. Examiner les sommets du tableau
@@ -84,6 +86,7 @@ export function findNextSafeFoundationMove(
 
     const topCard = column[column.length - 1]
     if (!topCard || !topCard.faceUp) continue
+    if (excludedSet?.has(topCard.id)) continue
 
     const from: Location = { zone: 'tableau', column: col }
 
@@ -98,7 +101,7 @@ export function findNextSafeFoundationMove(
   // 2. Examiner le sommet de la défausse (waste)
   if (state.waste.length > 0) {
     const topWaste = state.waste[state.waste.length - 1]
-    if (topWaste) {
+    if (topWaste && !excludedSet?.has(topWaste.id)) {
       const from: Location = { zone: 'waste' }
       for (let f = 0; f < state.foundations.length; f++) {
         const to: Location = { zone: 'foundation', foundationIndex: f }

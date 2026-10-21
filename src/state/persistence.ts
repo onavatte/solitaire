@@ -29,6 +29,7 @@ export interface UserPreferences {
 export interface SavedGame {
   readonly history: GameHistory
   readonly hasCountedPlayed: boolean
+  readonly pulledFromFoundationIds?: readonly string[]
 }
 
 export const STORAGE_KEYS = {
@@ -138,9 +139,16 @@ export function loadSavedGame(): SavedGame | null {
         past: parsed['history'].past.map((s) => (isValidGameState(s) ? sanitizeGameState(s) : s)),
         present: sanitizeGameState(parsed['history'].present),
       }
+      const pulledRaw = parsed['pulledFromFoundationIds']
+      const pulledFromFoundationIds =
+        Array.isArray(pulledRaw) && pulledRaw.every((item) => typeof item === 'string')
+          ? (pulledRaw as string[])
+          : []
+
       return {
         history,
         hasCountedPlayed: Boolean(parsed['hasCountedPlayed']),
+        pulledFromFoundationIds,
       }
     }
     return null
